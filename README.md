@@ -6,6 +6,7 @@
 <span style="font-size:18px;"> **本中文改版最初版本为3.12.0** </span><br>
 <span style="font-size:18px;"> **本中文改版优先专注于3DS版本的汉化** </span><br>
 <span style="font-size:18px;"> **Switch版本没有就肯定是没做完** </span><br>
+<span style="font-size:18px;"> **作者没有破解Switch，没办法测试Switch版，慎用** </span><br>
 <span style="font-size:18px;"> **但是更新日志都会同步原仓库** </span>
 <p align="center"><img src="https://i.imgur.com/adEdJWO.jpeg" />
 <img src="https://i.imgur.com/7Z2S0gG.png" /></p>
