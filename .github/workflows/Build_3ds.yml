@@ -1,0 +1,37 @@
+name: Build_3ds
+
+on:
+  push:
+    branches: [ master ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: 
+      image: devkitpro/devkitarm:latest
+
+    steps:
+      - name: "Clone"
+        run: git clone --recurse-submodules -j8 https://github.com/seien210300928/Checkpoint_Chs.git /Checkpoint_Chs
+      - name: Install bannertool and makerom
+        run: |
+          mkdir -p tool
+          wget -O tool/bannertool.zip https://github.com/diasurgical/bannertool/releases/download/1.2.0/bannertool.zip
+          unzip -j tool/bannertool.zip linux-x86_64/bannertool -d /usr/local/bin
+          chmod +x /usr/local/bin/bannertool
+          wget -O tool/makerom.zip https://github.com/3DSGuy/Project_CTR/releases/download/makerom-v0.18/makerom-v0.18-ubuntu_x86_64.zip
+          unzip -j tool/makerom.zip makerom -d /usr/local/bin
+          chmod +x /usr/local/bin/makerom
+      - name: "Build_3ds"
+        working-directory: "/Checkpoint_Chs"
+        run: |
+          make SUBDIRS=3ds
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Checkpoint_Chs-Build
+          path: |
+            /Checkpoint_Chs/3ds/out/Checkpoint.cia
+            /Checkpoint_Chs/3ds/out/Checkpoint.3dsx
+            /Checkpoint_Chs/3ds/out/Checkpoint.elf
