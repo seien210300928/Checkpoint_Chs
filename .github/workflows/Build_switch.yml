@@ -19,7 +19,6 @@ jobs:
         working-directory: "/Checkpoint_Chs"
         run: |
           make SUBDIRS=switch
-          mv /Checkpoint_Chs/switch/out/Checkpoint.elf /Checkpoint_Chs/switch/out/Checkpoint.nro.elf
       - uses: actions/upload-artifact@v4
         with:
           name: Checkpoint_Chs-switch
