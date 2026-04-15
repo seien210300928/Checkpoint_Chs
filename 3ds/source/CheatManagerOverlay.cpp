@@ -140,7 +140,7 @@ void CheatManagerOverlay::update(const InputState& input)
             g_selectedCheatCodes.push_back(scrollable->cellName(i));
         }
         me = std::make_shared<YesNoOverlay>(
-            screen, "你想要\n存储作弊文件吗?",
+            screen, "你想要\n存储金手指吗?",
             []() {
                 CheatManager::getInstance().save(g_selectedCheatKey, g_selectedCheatCodes);
                 g_screen->removeOverlay();

@@ -18,7 +18,7 @@
  *   Additional Terms 7.b and 7.c of GPLv3 apply to this file:
  *       * Requiring preservation of specified reasonable legal notices or
  *         author attributions in that material or in the Appropriate Legal
- *         Notices displayed by works containing it.
+ *         否tices displayed by works containing it.
  *       * Prohibiting misrepresentation of the origin of that material,
  *         or requiring that modified versions of such material be marked in
  *         reasonable ways as different from the original version.
@@ -41,11 +41,11 @@ MainScreen::MainScreen(const InputState& input) : hid(rowlen * collen, collen, i
     selectionTimer   = 0;
     sprintf(ver, "v%d.%d.%d", VERSION_MAJOR, VERSION_MINOR, VERSION_MICRO);
     backupList    = std::make_unique<Scrollable>(608, 316, 400, 408, rows);
-    buttonBackup  = std::make_unique<Clickable>(1012, 316, 260, 64, COLOR_BLACK_DARKER, COLOR_GREY_LIGHT, "Backup \ue004", true);
-    buttonRestore = std::make_unique<Clickable>(1012, 384, 260, 64, COLOR_BLACK_DARKER, COLOR_GREY_LIGHT, "Restore \ue005", true);
+    button备份  = std::make_unique<Clickable>(1012, 316, 260, 64, COLOR_BLACK_DARKER, COLOR_GREY_LIGHT, "备份 \ue004", true);
+    button恢复 = std::make_unique<Clickable>(1012, 384, 260, 64, COLOR_BLACK_DARKER, COLOR_GREY_LIGHT, "恢复 \ue005", true);
     buttonCheats  = std::make_unique<Clickable>(1012, 452, 260, 64, COLOR_BLACK_DARKER, COLOR_GREY_LIGHT, "Cheats \ue0c5", true);
-    buttonBackup->canChangeColorWhenSelected(true);
-    buttonRestore->canChangeColorWhenSelected(true);
+    button备份->canChangeColorWhenSelected(true);
+    button恢复->canChangeColorWhenSelected(true);
     buttonCheats->canChangeColorWhenSelected(true);
 
     int filterY = TOPBAR_h + 12;
@@ -224,15 +224,15 @@ void MainScreen::draw() const
         }
 
         backupList->draw(g_backupScrollEnabled);
-        buttonBackup->draw(30, COLOR_PURPLE_LIGHT);
-        buttonRestore->draw(30, COLOR_PURPLE_LIGHT);
+        button备份->draw(30, COLOR_PURPLE_LIGHT);
+        button恢复->draw(30, COLOR_PURPLE_LIGHT);
         buttonCheats->draw(30, COLOR_PURPLE_LIGHT);
     }
     else {
-        const char* emptyMsg = mSaveTypeFilter == FILTER_BCAT     ? "No BCAT saves"
-                               : mSaveTypeFilter == FILTER_DEVICE ? "No Device saves"
-                               : mSaveTypeFilter == FILTER_SYSTEM ? "No System saves"
-                                                                  : "No saves";
+        const char* emptyMsg = mSaveTypeFilter == FILTER_BCAT     ? "否 BCAT saves"
+                               : mSaveTypeFilter == FILTER_DEVICE ? "否 Device saves"
+                               : mSaveTypeFilter == FILTER_SYSTEM ? "否 System saves"
+                                                                  : "否 saves";
         u32 emptyW;
         SDLH_GetTextDimensions(26, emptyMsg, &emptyW, NULL);
         SDLH_DrawText(26, LEFT_SIDEBAR_w + (532 - emptyW) / 2, 360, COLOR_GREY_LIGHT, emptyMsg);
@@ -258,9 +258,9 @@ void MainScreen::draw() const
         }
         if (gethostid() != INADDR_LOOPBACK) {
             if (g_ftpAvailable && Configuration::getInstance().isFTPEnabled()) {
-                SDLH_DrawText(24, 600, 642, COLOR_GOLD, StringUtils::format("FTP server running on %s:50000", getConsoleIP()).c_str());
+                SDLH_DrawText(24, 600, 642, COLOR_GOLD, StringUtils::format("FTP服务器运行于 %s:50000", getConsoleIP()).c_str());
             }
-            SDLH_DrawText(24, 600, 672, COLOR_GOLD, StringUtils::format("Configuration server running on %s:8000", getConsoleIP()).c_str());
+            SDLH_DrawText(24, 600, 672, COLOR_GOLD, StringUtils::format("配置服务器运行于 %s:8000", getConsoleIP()).c_str());
         }
     }
 
@@ -273,7 +273,7 @@ void MainScreen::draw() const
         drawOutline(mx, my, mw, mh, 3, COLOR_PURPLE_LIGHT);
 
         // Title
-        std::string titleStr = (g_transferMode.empty() ? "Copying files" : g_transferMode) + " in progress...";
+        std::string titleStr = (g_transferMode.empty() ? "复制文件中" : g_transferMode) + " 进行中...";
         u32 title_w, title_h;
         SDLH_GetTextDimensions(26, titleStr.c_str(), &title_w, &title_h);
         SDLH_DrawText(26, mx + (mw - (int)title_w) / 2, my + 14, COLOR_WHITE, titleStr.c_str());
@@ -501,13 +501,13 @@ void MainScreen::handleEvents(const InputState& input)
     }
 
     // Handle pressing A
-    // Backup list active:   Backup/Restore
-    // Backup list inactive: Activate backup list only if multiple
+    // 备份 list active:   备份/恢复
+    // 备份 list inactive: Activate backup list only if multiple
     //                       selections are enabled
     if ((kdown & HidNpadButton_A) && getFilteredTitleCount(g_currentUId, mSaveTypeFilter) > 0) {
         // If backup list is active...
         if (g_backupScrollEnabled) {
-            // If the "New..." entry is selected...
+            // If the "新建..." entry is selected...
             if (0 == this->index(CELLS)) {
                 if (!getPKSMBridgeFlag()) {
                     auto result = io::backup(rawIndex(), g_currentUId, this->index(CELLS));
@@ -530,8 +530,8 @@ void MainScreen::handleEvents(const InputState& input)
                     }
                 }
                 else {
-                    currentOverlay = std::make_shared<YesNoOverlay>(
-                        *this, "Restore selected save?",
+                    currentOverlay = std::make_shared<是否Overlay>(
+                        *this, "恢复所选存档？",
                         [this]() {
                             auto result = io::restore(rawIndex(), g_currentUId, this->index(CELLS), nameFromCell(this->index(CELLS)));
                             if (std::get<0>(result)) {
@@ -571,8 +571,8 @@ void MainScreen::handleEvents(const InputState& input)
         if (g_backupScrollEnabled) {
             size_t index = this->index(CELLS);
             if (index > 0) {
-                currentOverlay = std::make_shared<YesNoOverlay>(
-                    *this, "Delete selected backup?",
+                currentOverlay = std::make_shared<是否Overlay>(
+                    *this, "删除所选备份？",
                     [this, index]() {
                         Title title;
                         getTitle(title, g_currentUId, rawIndex());
@@ -591,9 +591,9 @@ void MainScreen::handleEvents(const InputState& input)
     }
 
     // Handle pressing Y
-    // Backup list active:   Deactivate backup list, select title, and
+    // 备份 list active:   Deactivate backup list, select title, and
     //                       enable backup button
-    // Backup list inactive: Select title and enable backup button
+    // 备份 list inactive: Select title and enable backup button
     if (kdown & HidNpadButton_Y) {
         if (g_backupScrollEnabled) {
             this->index(CELLS, 0);
@@ -622,7 +622,7 @@ void MainScreen::handleEvents(const InputState& input)
     }
 
     // Handle pressing/touching L
-    if (buttonBackup->released() || (kdown & HidNpadButton_L)) {
+    if (button备份->released() || (kdown & HidNpadButton_L)) {
         if (MS::multipleSelectionEnabled()) {
             resetIndex(CELLS);
             std::vector<size_t> list = MS::selectedEntries();
@@ -640,13 +640,13 @@ void MainScreen::handleEvents(const InputState& input)
             MS::clearSelectedEntries();
             updateButtons();
             blinkLed(4);
-            currentOverlay = std::make_shared<InfoOverlay>(*this, "Progress correctly saved to disk.");
+            currentOverlay = std::make_shared<InfoOverlay>(*this, "进度已成功保存到磁盘。");
         }
         else if (g_backupScrollEnabled) {
             if (getPKSMBridgeFlag()) {
                 if (this->index(CELLS) != 0) {
-                    currentOverlay = std::make_shared<YesNoOverlay>(
-                        *this, "Send save to PKSM?",
+                    currentOverlay = std::make_shared<是否Overlay>(
+                        *this, "发送存档到PKSM？",
                         [this]() {
                             auto result = sendToPKSMBrigde(rawIndex(), g_currentUId, this->index(CELLS));
                             if (std::get<0>(result)) {
@@ -660,8 +660,8 @@ void MainScreen::handleEvents(const InputState& input)
                 }
             }
             else {
-                currentOverlay = std::make_shared<YesNoOverlay>(
-                    *this, "Backup selected save?",
+                currentOverlay = std::make_shared<是否Overlay>(
+                    *this, "备份所选存档？",
                     [this]() {
                         auto result = io::backup(rawIndex(), g_currentUId, this->index(CELLS));
                         if (std::get<0>(result)) {
@@ -677,11 +677,11 @@ void MainScreen::handleEvents(const InputState& input)
     }
 
     // Handle pressing/touching R
-    if (buttonRestore->released() || (kdown & HidNpadButton_R)) {
+    if (button恢复->released() || (kdown & HidNpadButton_R)) {
         if (g_backupScrollEnabled) {
             if (getPKSMBridgeFlag() && this->index(CELLS) != 0) {
-                currentOverlay = std::make_shared<YesNoOverlay>(
-                    *this, "Receive save from PKSM?",
+                currentOverlay = std::make_shared<是否Overlay>(
+                    *this, "从PKSM接收存档？",
                     [this]() {
                         auto result = recvFromPKSMBridge(rawIndex(), g_currentUId, this->index(CELLS));
                         if (std::get<0>(result)) {
@@ -695,8 +695,8 @@ void MainScreen::handleEvents(const InputState& input)
             }
             else {
                 if (this->index(CELLS) != 0) {
-                    currentOverlay = std::make_shared<YesNoOverlay>(
-                        *this, "Restore selected save?",
+                    currentOverlay = std::make_shared<是否Overlay>(
+                        *this, "恢复所选存档？",
                         [this]() {
                             auto result = io::restore(rawIndex(), g_currentUId, this->index(CELLS), nameFromCell(this->index(CELLS)));
                             if (std::get<0>(result)) {
@@ -725,7 +725,7 @@ void MainScreen::handleEvents(const InputState& input)
                 currentOverlay = std::make_shared<CheatManagerOverlay>(*this, key);
             }
             else {
-                currentOverlay = std::make_shared<InfoOverlay>(*this, "No available cheat codes for this title.");
+                currentOverlay = std::make_shared<InfoOverlay>(*this, "否 available cheat codes for this title.");
             }
         }
     }
@@ -781,34 +781,34 @@ void MainScreen::setPKSMBridgeFlag(bool f)
 void MainScreen::updateButtons(void)
 {
     if (MS::multipleSelectionEnabled()) {
-        buttonRestore->canChangeColorWhenSelected(true);
-        buttonRestore->canChangeColorWhenSelected(false);
+        button恢复->canChangeColorWhenSelected(true);
+        button恢复->canChangeColorWhenSelected(false);
         buttonCheats->canChangeColorWhenSelected(false);
-        buttonBackup->setColors(COLOR_BLACK_DARKER, COLOR_WHITE);
-        buttonRestore->setColors(COLOR_BLACK_DARKER, COLOR_GREY_LIGHT);
+        button备份->setColors(COLOR_BLACK_DARKER, COLOR_WHITE);
+        button恢复->setColors(COLOR_BLACK_DARKER, COLOR_GREY_LIGHT);
         buttonCheats->setColors(COLOR_BLACK_DARKER, COLOR_GREY_LIGHT);
     }
     else if (g_backupScrollEnabled) {
-        buttonBackup->canChangeColorWhenSelected(true);
-        buttonRestore->canChangeColorWhenSelected(true);
+        button备份->canChangeColorWhenSelected(true);
+        button恢复->canChangeColorWhenSelected(true);
         buttonCheats->canChangeColorWhenSelected(true);
-        buttonBackup->setColors(COLOR_BLACK_DARKER, COLOR_WHITE);
-        buttonRestore->setColors(COLOR_BLACK_DARKER, COLOR_WHITE);
+        button备份->setColors(COLOR_BLACK_DARKER, COLOR_WHITE);
+        button恢复->setColors(COLOR_BLACK_DARKER, COLOR_WHITE);
         buttonCheats->setColors(COLOR_BLACK_DARKER, COLOR_WHITE);
     }
     else {
-        buttonBackup->setColors(COLOR_BLACK_DARKER, COLOR_GREY_LIGHT);
-        buttonRestore->setColors(COLOR_BLACK_DARKER, COLOR_GREY_LIGHT);
+        button备份->setColors(COLOR_BLACK_DARKER, COLOR_GREY_LIGHT);
+        button恢复->setColors(COLOR_BLACK_DARKER, COLOR_GREY_LIGHT);
         buttonCheats->setColors(COLOR_BLACK_DARKER, COLOR_GREY_LIGHT);
     }
 
     if (getPKSMBridgeFlag() && mSaveTypeFilter == FILTER_SAVES) {
-        buttonBackup->text("Send \ue004");
-        buttonRestore->text("Receive \ue005");
+        button备份->text("Send \ue004");
+        button恢复->text("Receive \ue005");
     }
     else {
-        buttonBackup->text("Backup \ue004");
-        buttonRestore->text("Restore \ue005");
+        button备份->text("备份 \ue004");
+        button恢复->text("恢复 \ue005");
     }
 }
 

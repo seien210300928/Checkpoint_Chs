@@ -18,7 +18,7 @@
  *   Additional Terms 7.b and 7.c of GPLv3 apply to this file:
  *       * Requiring preservation of specified reasonable legal notices or
  *         author attributions in that material or in the Appropriate Legal
- *         Notices displayed by works containing it.
+ *         否tices displayed by works containing it.
  *       * Prohibiting misrepresentation of the origin of that material,
  *         or requiring that modified versions of such material be marked in
  *         reasonable ways as different from the original version.
@@ -51,7 +51,7 @@ std::tuple<bool, Result, std::string> sendToPKSMBrigde(size_t index, AccountUid 
 {
     auto systemKeyboardAvailable = KeyboardManager::get().isSystemKeyboardAvailable();
     if (!systemKeyboardAvailable.first) {
-        return std::make_tuple(false, systemKeyboardAvailable.second, "System keyboard not accessible.");
+        return std::make_tuple(false, systemKeyboardAvailable.second, "系统键盘不可用。");
     }
 
     // load data
@@ -65,13 +65,13 @@ std::tuple<bool, Result, std::string> sendToPKSMBrigde(size_t index, AccountUid 
         filename = "/backup";
     }
     else {
-        return std::make_tuple(false, systemKeyboardAvailable.second, "Invalid title.");
+        return std::make_tuple(false, systemKeyboardAvailable.second, "无效的游戏。");
     }
 
     std::string srcPath = title.fullPath(cellIndex) + filename;
     FILE* save          = fopen(srcPath.c_str(), "rb");
     if (save == NULL) {
-        return std::make_tuple(false, systemKeyboardAvailable.second, "Failed to open source file.");
+        return std::make_tuple(false, systemKeyboardAvailable.second, "打开源文件失败。");
     }
 
     fseek(save, 0, SEEK_END);
@@ -82,10 +82,10 @@ std::tuple<bool, Result, std::string> sendToPKSMBrigde(size_t index, AccountUid 
     fclose(save);
 
     // get server address
-    auto ipaddress = KeyboardManager::get().keyboard("Input PKSM IP address");
+    auto ipaddress = KeyboardManager::get().keyboard("输入PKSM的IP地址");
     if (!ipaddress.first || !validateIpAddress(ipaddress.second)) {
         delete[] data;
-        return std::make_tuple(false, -1, "Invalid IP address.");
+        return std::make_tuple(false, -1, "无效的IP地址。");
     }
 
     // send via TCP
@@ -93,7 +93,7 @@ std::tuple<bool, Result, std::string> sendToPKSMBrigde(size_t index, AccountUid 
     struct sockaddr_in servaddr;
     if ((fd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         delete[] data;
-        return std::make_tuple(false, errno, "Socket creation failed.");
+        return std::make_tuple(false, errno, "创建套接字失败。");
     }
     memset(&servaddr, 0, sizeof(servaddr));
     servaddr.sin_family      = AF_INET;
@@ -103,7 +103,7 @@ std::tuple<bool, Result, std::string> sendToPKSMBrigde(size_t index, AccountUid 
     if (connect(fd, (struct sockaddr*)&servaddr, sizeof(servaddr)) < 0) {
         close(fd);
         delete[] data;
-        return std::make_tuple(false, errno, "Socket connection failed.");
+        return std::make_tuple(false, errno, "套接字连接失败。");
     }
 
     size_t total = 0;
@@ -122,10 +122,10 @@ std::tuple<bool, Result, std::string> sendToPKSMBrigde(size_t index, AccountUid 
     delete[] data;
 
     if (total == size) {
-        return std::make_tuple(true, 0, "Data sent correctly.");
+        return std::make_tuple(true, 0, "数据发送成功。");
     }
     else {
-        return std::make_tuple(false, errno, "Failed to send data.");
+        return std::make_tuple(false, errno, "发送数据失败。");
     }
 }
 
@@ -135,7 +135,7 @@ std::tuple<bool, Result, std::string> recvFromPKSMBridge(size_t index, AccountUi
     struct sockaddr_in servaddr;
     if ((fd = socket(AF_INET, SOCK_STREAM, IPPROTO_IP)) < 0) {
         Logging::error("Socket creation failed: {}.", fd);
-        return std::make_tuple(false, errno, "Socket creation failed.");
+        return std::make_tuple(false, errno, "创建套接字失败。");
     }
 
     memset(&servaddr, 0, sizeof(servaddr));
@@ -184,7 +184,7 @@ std::tuple<bool, Result, std::string> recvFromPKSMBridge(size_t index, AccountUi
         close(fd);
         close(fdconn);
         Logging::error("Failed to open destination file with errno {}.", errno);
-        return std::make_tuple(false, errno, "Failed to open destination file.");
+        return std::make_tuple(false, errno, "打开目标文件失败。");
     }
 
     char* data = new char[size]();
@@ -209,12 +209,12 @@ std::tuple<bool, Result, std::string> recvFromPKSMBridge(size_t index, AccountUi
         fclose(save);
         delete[] data;
         Logging::info("pksmbridge data received correctly.");
-        return std::make_tuple(true, 0, "Data received correctly.");
+        return std::make_tuple(true, 0, "数据接收成功。");
     }
     else {
         fclose(save);
         delete[] data;
         Logging::error("Failed to receive pksmbridge data.");
-        return std::make_tuple(false, errno, "Failed to receive data.");
+        return std::make_tuple(false, errno, "接收数据失败。");
     }
 }

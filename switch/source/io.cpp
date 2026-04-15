@@ -18,7 +18,7 @@
  *   Additional Terms 7.b and 7.c of GPLv3 apply to this file:
  *       * Requiring preservation of specified reasonable legal notices or
  *         author attributions in that material or in the Appropriate Legal
- *         Notices displayed by works containing it.
+ *         否tices displayed by works containing it.
  *       * Prohibiting misrepresentation of the origin of that material,
  *         or requiring that modified versions of such material be marked in
  *         reasonable ways as different from the original version.
@@ -56,12 +56,12 @@ void io::copyFile(const std::string& srcPath, const std::string& dstPath)
 
     FILE* src = fopen(srcPath.c_str(), "rb");
     if (src == NULL) {
-        Logging::error("Failed to open source file {} during copy with errno {}. Skipping...", srcPath, errno);
+        Logging::error("复制过程中打开源文件 {} 失败，错误代码 {}。跳过...", srcPath, errno);
         return;
     }
     FILE* dst = fopen(dstPath.c_str(), "wb");
     if (dst == NULL) {
-        Logging::error("Failed to open destination file {} during copy with errno {}. Skipping...", dstPath, errno);
+        Logging::error("复制过程中打开目标文件 {} 失败，错误代码 {}。跳过...", dstPath, errno);
         fclose(src);
         return;
     }
@@ -101,7 +101,7 @@ void io::copyFile(const std::string& srcPath, const std::string& dstPath)
 
     // commit each file to the save
     if (dstPath.rfind("save:/", 0) == 0) {
-        Logging::error("Committing file {} to the save archive.", dstPath);
+        Logging::error("正在将文件 {} 提交到存档。", dstPath);
         fsdevCommitDevice("save");
     }
 
@@ -185,7 +185,7 @@ std::tuple<bool, Result, std::string> io::backup(size_t index, AccountUid uid, s
     Title title;
     getTitle(title, uid, index);
 
-    Logging::info("Started backup of {}. Title id: 0x{:016X}; User id: 0x{:X}{:X}.", title.name().c_str(), title.id(), title.userId().uid[1],
+    Logging::info("开始备份 {}。游戏ID：0x{:016X}；用户ID：0x{:X}{:X}。", title.name().c_str(), title.id(), title.userId().uid[1],
         title.userId().uid[0]);
 
     FsFileSystem fileSystem;
@@ -205,13 +205,13 @@ std::tuple<bool, Result, std::string> io::backup(size_t index, AccountUid uid, s
         int rc = FileSystem::mountDevice(fileSystem);
         if (rc == -1) {
             FileSystem::unmountDevice();
-            Logging::error("Failed to mount filesystem during backup. Title id: 0x{:016X}.", title.id());
-            return std::make_tuple(false, -2, "Failed to mount save.");
+            Logging::error("备份时挂载文件系统失败。游戏ID：0x{:016X}。", title.id());
+            return std::make_tuple(false, -2, "挂载存档失败。");
         }
     }
     else {
         Logging::error("Failed to mount filesystem during backup with result 0x{:08X}. Title id: 0x{:016X}.", res, title.id());
-        return std::make_tuple(false, res, "Failed to mount save.");
+        return std::make_tuple(false, res, "挂载存档失败。");
     }
 
     std::string suggestion;
@@ -223,7 +223,7 @@ std::tuple<bool, Result, std::string> io::backup(size_t index, AccountUid uid, s
         suggestion = DateTime::dateTimeStr() + " " +
                      (StringUtils::containsInvalidChar(Account::username(title.userId()))
                              ? ""
-                             : StringUtils::removeNotAscii(StringUtils::removeAccents(Account::username(title.userId()))));
+                             : StringUtils::remove否tAscii(StringUtils::removeAccents(Account::username(title.userId()))));
     }
     std::string customPath;
 
@@ -240,7 +240,7 @@ std::tuple<bool, Result, std::string> io::backup(size_t index, AccountUid uid, s
                 else {
                     FileSystem::unmountDevice();
                     Logging::info("Copy operation aborted by the user through the system keyboard.");
-                    return std::make_tuple(false, 0, "Operation aborted by the user.");
+                    return std::make_tuple(false, 0, "操作被用户取消。");
                 }
             }
             else {
@@ -273,13 +273,13 @@ std::tuple<bool, Result, std::string> io::backup(size_t index, AccountUid uid, s
     io::createDirectory(dstPath);
     g_copyCount    = 0;
     g_copyTotal    = io::countFiles("save:/");
-    g_transferMode = "Backup";
+    g_transferMode = "备份";
     res            = io::copyDirectory("save:/", dstPath + "/");
     if (R_FAILED(res)) {
         FileSystem::unmountDevice();
         io::deleteFolderRecursively((dstPath + "/").c_str());
         Logging::error("Failed to copy directory {} with result 0x{:08X}. Skipping...", dstPath, res);
-        return std::make_tuple(false, res, "Failed to backup save.");
+        return std::make_tuple(false, res, "备份存档失败。");
     }
 
     refreshDirectories(title.id());
@@ -287,17 +287,17 @@ std::tuple<bool, Result, std::string> io::backup(size_t index, AccountUid uid, s
     FileSystem::unmountDevice();
     if (!MS::multipleSelectionEnabled()) {
         blinkLed(4);
-        ret = std::make_tuple(true, 0, "Progress correctly saved to disk.");
+        ret = std::make_tuple(true, 0, "进度已成功保存到磁盘。");
     }
 
     auto systemKeyboardAvailable = KeyboardManager::get().isSystemKeyboardAvailable();
     if (!systemKeyboardAvailable.first) {
         return std::make_tuple(true, systemKeyboardAvailable.second,
-            "Progress correctly saved to disk.\nSystem keyboard applet was not\naccessible. The suggested destination\nfolder was used instead.");
+            "进度已成功保存到磁盘。\nSystem keyboard applet was not\naccessible. The suggested destination\nfolder was used instead.");
     }
 
-    ret = std::make_tuple(true, 0, "Progress correctly saved to disk.");
-    Logging::info("Backup succeeded.");
+    ret = std::make_tuple(true, 0, "进度已成功保存到磁盘。");
+    Logging::info("备份 succeeded.");
     return ret;
 }
 
@@ -308,7 +308,7 @@ std::tuple<bool, Result, std::string> io::restore(size_t index, AccountUid uid, 
     Title title;
     getTitle(title, uid, index);
 
-    Logging::info("Started restore of {}. Title id: 0x{:016X}; User id: 0x{:X}{:X}.", title.name().c_str(), title.id(), title.userId().uid[1],
+    Logging::info("开始恢复 {}。游戏ID：0x{:016X}；用户ID：0x{:X}{:X}。", title.name().c_str(), title.id(), title.userId().uid[1],
         title.userId().uid[0]);
 
     FsFileSystem fileSystem;
@@ -328,13 +328,13 @@ std::tuple<bool, Result, std::string> io::restore(size_t index, AccountUid uid, 
         int rc = FileSystem::mountDevice(fileSystem);
         if (rc == -1) {
             FileSystem::unmountDevice();
-            Logging::error("Failed to mount filesystem during restore. Title id: 0x{:016X}.", title.id());
-            return std::make_tuple(false, -2, "Failed to mount save.");
+            Logging::error("恢复时挂载文件系统失败。游戏ID：0x{:016X}。", title.id());
+            return std::make_tuple(false, -2, "挂载存档失败。");
         }
     }
     else {
         Logging::error("Failed to mount filesystem during restore with result 0x{:08X}. Title id: 0x{:016X}.", res, title.id());
-        return std::make_tuple(false, res, "Failed to mount save.");
+        return std::make_tuple(false, res, "挂载存档失败。");
     }
 
     std::string srcPath = title.fullPath(cellIndex) + "/";
@@ -344,31 +344,31 @@ std::tuple<bool, Result, std::string> io::restore(size_t index, AccountUid uid, 
     if (R_FAILED(res)) {
         FileSystem::unmountDevice();
         Logging::error("Failed to recursively delete directory {} with result 0x{:08X}.", dstPath, res);
-        return std::make_tuple(false, res, "Failed to delete save.");
+        return std::make_tuple(false, res, "删除存档失败。");
     }
 
     g_copyCount    = 0;
     g_copyTotal    = io::countFiles(srcPath);
-    g_transferMode = "Restore";
+    g_transferMode = "恢复";
     res            = io::copyDirectory(srcPath, dstPath);
     if (R_FAILED(res)) {
         FileSystem::unmountDevice();
         Logging::error("Failed to copy directory {} to {} with result 0x{:08X}. Skipping...", srcPath, dstPath, res);
-        return std::make_tuple(false, res, "Failed to restore save.");
+        return std::make_tuple(false, res, "恢复存档失败。");
     }
 
     res = fsdevCommitDevice("save");
     if (R_FAILED(res)) {
         Logging::error("Failed to commit save with result 0x{:08X}.", res);
-        return std::make_tuple(false, res, "Failed to commit to save device.");
+        return std::make_tuple(false, res, "提交到存档设备失败。");
     }
     else {
         blinkLed(4);
-        ret = std::make_tuple(true, 0, nameFromCell + "\nhas been restored successfully.");
+        ret = std::make_tuple(true, 0, nameFromCell + "\n已成功恢复。");
     }
 
     FileSystem::unmountDevice();
 
-    Logging::info("Restore succeeded.");
+    Logging::info("恢复 succeeded.");
     return ret;
 }

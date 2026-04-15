@@ -18,7 +18,7 @@
  *   Additional Terms 7.b and 7.c of GPLv3 apply to this file:
  *       * Requiring preservation of specified reasonable legal notices or
  *         author attributions in that material or in the Appropriate Legal
- *         Notices displayed by works containing it.
+ *         否tices displayed by works containing it.
  *       * Prohibiting misrepresentation of the origin of that material,
  *         or requiring that modified versions of such material be marked in
  *         reasonable ways as different from the original version.
@@ -37,7 +37,7 @@ CheatManager::CheatManager(void)
             fclose(in);
         }
         else {
-            Logging::warning("Failed to open {} with errno {}.", path, errno);
+            Logging::warning("无法打开 {}，错误代码 {}。", path, errno);
         }
     }
     else {
@@ -54,7 +54,7 @@ CheatManager::CheatManager(void)
             fread(s, 1, size, f);
 
             int r = BZ2_bzBuffToBuffDecompress(d, &destLen, s, size, 0, 0);
-            if (r == BZ_OK) {
+            if (r == BZ_确定) {
                 mCheats = std::make_shared<nlohmann::json>(nlohmann::json::parse(d));
             }
 
@@ -107,7 +107,7 @@ void CheatManager::save(const std::string& key, const std::vector<std::string>& 
             fclose(f);
         }
         else {
-            Logging::error("Failed to write {} with errno {}.", outPath, errno);
+            Logging::error("无法写入 {}，错误代码 {}。", outPath, errno);
         }
     }
 }

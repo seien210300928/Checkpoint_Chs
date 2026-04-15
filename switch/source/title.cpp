@@ -18,7 +18,7 @@
  *   Additional Terms 7.b and 7.c of GPLv3 apply to this file:
  *       * Requiring preservation of specified reasonable legal notices or
  *         author attributions in that material or in the Appropriate Legal
- *         Notices displayed by works containing it.
+ *         否tices displayed by works containing it.
  *       * Prohibiting misrepresentation of the origin of that material,
  *         or requiring that modified versions of such material be marked in
  *         reasonable ways as different from the original version.
@@ -198,7 +198,7 @@ u64 Title::playTimeNanoseconds(void)
 std::string Title::playTime(void)
 {
     const u64 playTimeMinutes = mPlayTimeNanoseconds / 60000000000;
-    return StringUtils::format("%d", playTimeMinutes / 60) + ":" + StringUtils::format("%02d", playTimeMinutes % 60) + " hours";
+    return StringUtils::format("%d", playTimeMinutes / 60) + ":" + StringUtils::format("%02d", playTimeMinutes % 60) + " 小时";
 }
 
 void Title::playTimeNanoseconds(u64 playTimeNanoseconds)
@@ -232,8 +232,8 @@ void Title::refreshDirectories(void)
 
         std::sort(mSaves.rbegin(), mSaves.rend());
         std::sort(mFullSavePaths.rbegin(), mFullSavePaths.rend());
-        mSaves.insert(mSaves.begin(), "New...");
-        mFullSavePaths.insert(mFullSavePaths.begin(), "New...");
+        mSaves.insert(mSaves.begin(), "新建...");
+        mFullSavePaths.insert(mFullSavePaths.begin(), "新建...");
     }
     else {
         Logging::error("Couldn't retrieve the extdata directory list for the title {}", name());

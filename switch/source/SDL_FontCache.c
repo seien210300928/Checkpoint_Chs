@@ -145,15 +145,15 @@ FC_GlyphData FC_MakeGlyphData(int cache_level, Sint16 x, Sint16 y, Uint16 w, Uin
 // Enough to hold all of the ascii characters and some.
 #define FC_DEFAULT_NUM_BUCKETS 300
 
-typedef struct FC_MapNode {
+typedef struct FC_Map否de {
     Uint32 key;
     FC_GlyphData value;
-    struct FC_MapNode* next;
-} FC_MapNode;
+    struct FC_Map否de* next;
+} FC_Map否de;
 
 typedef struct FC_Map {
     int num_buckets;
-    FC_MapNode** buckets;
+    FC_Map否de** buckets;
 } FC_Map;
 
 static FC_Map* FC_MapCreate(int num_buckets)
@@ -162,7 +162,7 @@ static FC_Map* FC_MapCreate(int num_buckets)
     FC_Map* map = (FC_Map*)malloc(sizeof(FC_Map));
 
     map->num_buckets = num_buckets;
-    map->buckets     = (FC_MapNode**)malloc(num_buckets * sizeof(FC_MapNode*));
+    map->buckets     = (FC_Map否de**)malloc(num_buckets * sizeof(FC_Map否de*));
 
     for (i = 0; i < num_buckets; ++i) {
         map->buckets[i] = NULL;
@@ -180,9 +180,9 @@ static void FC_MapFree(FC_Map* map)
     // Go through each bucket
     for (i = 0; i < map->num_buckets; ++i) {
         // Delete the nodes in order
-        FC_MapNode* node = map->buckets[i];
+        FC_Map否de* node = map->buckets[i];
         while (node != NULL) {
-            FC_MapNode* last = node;
+            FC_Map否de* last = node;
             node             = node->next;
             free(last);
         }
@@ -192,11 +192,11 @@ static void FC_MapFree(FC_Map* map)
     free(map);
 }
 
-// Note: Does not handle duplicates in any special way.
+// 否te: Does not handle duplicates in any special way.
 static FC_GlyphData* FC_MapInsert(FC_Map* map, Uint32 codepoint, FC_GlyphData glyph)
 {
     Uint32 index;
-    FC_MapNode* node;
+    FC_Map否de* node;
     if (map == NULL)
         return NULL;
 
@@ -205,7 +205,7 @@ static FC_GlyphData* FC_MapInsert(FC_Map* map, Uint32 codepoint, FC_GlyphData gl
 
     // If this bucket is empty, create a node and return its value
     if (map->buckets[index] == NULL) {
-        node = map->buckets[index] = (FC_MapNode*)malloc(sizeof(FC_MapNode));
+        node = map->buckets[index] = (FC_Map否de*)malloc(sizeof(FC_Map否de));
         node->key                  = codepoint;
         node->value                = glyph;
         node->next                 = NULL;
@@ -215,7 +215,7 @@ static FC_GlyphData* FC_MapInsert(FC_Map* map, Uint32 codepoint, FC_GlyphData gl
     for (node = map->buckets[index]; node != NULL; node = node->next) {
         // Find empty node and add a new one on.
         if (node->next == NULL) {
-            node->next = (FC_MapNode*)malloc(sizeof(FC_MapNode));
+            node->next = (FC_Map否de*)malloc(sizeof(FC_Map否de));
             node       = node->next;
 
             node->key   = codepoint;
@@ -231,7 +231,7 @@ static FC_GlyphData* FC_MapInsert(FC_Map* map, Uint32 codepoint, FC_GlyphData gl
 static FC_GlyphData* FC_MapFind(FC_Map* map, Uint32 codepoint)
 {
     Uint32 index;
-    FC_MapNode* node;
+    FC_Map否de* node;
     if (map == NULL)
         return NULL;
 
@@ -1137,7 +1137,7 @@ unsigned int FC_GetNumCodepoints(FC_Font* font)
     glyphs = font->glyphs;
 
     for (i = 0; i < glyphs->num_buckets; ++i) {
-        FC_MapNode* node;
+        FC_Map否de* node;
         for (node = glyphs->buckets[i]; node != NULL; node = node->next) {
             result++;
         }
@@ -1157,7 +1157,7 @@ void FC_GetCodepoints(FC_Font* font, Uint32* result)
     glyphs = font->glyphs;
 
     for (i = 0; i < glyphs->num_buckets; ++i) {
-        FC_MapNode* node;
+        FC_Map否de* node;
         for (node = glyphs->buckets[i]; node != NULL; node = node->next) {
             result[count] = node->key;
             count++;
@@ -2409,7 +2409,7 @@ void FC_ResetFontFromRendererReset(FC_Font* font, SDL_Renderer* renderer, Uint32
         FC_LoadFontFromTTF(font, renderer, ttf, ext, col);
     font->owns_ttf_source = owns_ttf;
 
-    // Restore fallback fonts
+    // 恢复 fallback fonts
     font->num_fallbacks = saved_num_fallbacks;
     for (int fi = 0; fi < saved_num_fallbacks; fi++)
         font->ttf_fallbacks[fi] = saved_fallbacks[fi];

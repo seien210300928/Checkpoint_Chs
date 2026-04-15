@@ -18,7 +18,7 @@
  *   Additional Terms 7.b and 7.c of GPLv3 apply to this file:
  *       * Requiring preservation of specified reasonable legal notices or
  *         author attributions in that material or in the Appropriate Legal
- *         Notices displayed by works containing it.
+ *         否tices displayed by works containing it.
  *       * Prohibiting misrepresentation of the origin of that material,
  *         or requiring that modified versions of such material be marked in
  *         reasonable ways as different from the original version.
@@ -30,7 +30,7 @@ InfoOverlay::InfoOverlay(Screen& screen, const std::string& mtext) : Overlay(scr
 {
     text = mtext;
     SDLH_GetTextDimensions(28, text.c_str(), &textw, &texth);
-    button = std::make_unique<Clickable>(322, 462, 636, 56, COLOR_BLACK_DARK, COLOR_WHITE, "OK", true);
+    button = std::make_unique<Clickable>(322, 462, 636, 56, COLOR_BLACK_DARK, COLOR_WHITE, "确定", true);
     button->selected(true);
 }
 

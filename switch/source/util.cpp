@@ -18,7 +18,7 @@
  *   Additional Terms 7.b and 7.c of GPLv3 apply to this file:
  *       * Requiring preservation of specified reasonable legal notices or
  *         author attributions in that material or in the Appropriate Legal
- *         Notices displayed by works containing it.
+ *         否tices displayed by works containing it.
  *       * Prohibiting misrepresentation of the origin of that material,
  *         or requiring that modified versions of such material be marked in
  *         reasonable ways as different from the original version.
@@ -53,10 +53,10 @@ Result servicesInit(void)
     io::createDirectory("sdmc:/switch/Checkpoint/system");
     io::createDirectory("sdmc:/switch/Checkpoint/logs");
 
-    Logging::info("Starting Checkpoint loading...");
+    Logging::info("Checkpoint开始加载...");
 
     if (appletGetAppletType() != AppletType_Application) {
-        Logging::warning("Please do not run Checkpoint in applet mode.");
+        Logging::warning("请不要在小程序模式下运行Checkpoint。");
     }
 
     Result socinit = 0;
@@ -64,7 +64,7 @@ Result servicesInit(void)
         // nxlinkStdio();
     }
     else {
-        Logging::info("Unable to initialize socket. Result code 0x{:08X}.", socinit);
+        Logging::info("无法初始化套接字。结果代码0x{:08X}。", socinit);
     }
 
     g_shouldExitNetworkLoop = R_FAILED(socinit);
@@ -100,7 +100,7 @@ Result servicesInit(void)
         g_notificationLedAvailable = true;
     }
     else {
-        Logging::info("Notification led not available. Result code 0x{:08X}.", res);
+        Logging::info("通知指示灯不可用。结果代码0x{:08X}。", res);
     }
 
     Configuration::getInstance();
@@ -108,10 +108,10 @@ Result servicesInit(void)
     if (R_SUCCEEDED(socinit)) {
         if (R_SUCCEEDED(res = ftp_init())) {
             g_ftpAvailable = true;
-            Logging::info("FTP Server successfully loaded.");
+            Logging::info("FTP服务器加载成功。");
         }
         else {
-            Logging::info("FTP Server failed to load. Result code 0x{:08X}.", res);
+            Logging::info("FTP服务器加载失败。结果代码0x{:08X}。", res);
         }
     }
 
@@ -120,7 +120,7 @@ Result servicesInit(void)
         Logging::warning("pdmqryInitialize failed with result 0x{:08X}.", res);
     }
 
-    Logging::info("Checkpoint loading completed!");
+    Logging::info("Checkpoint加载完成！");
 
     return 0;
 }
@@ -149,7 +149,7 @@ std::string StringUtils::removeAccents(std::string str)
     return UTF16toUTF8(src);
 }
 
-std::string StringUtils::removeNotAscii(std::string str)
+std::string StringUtils::remove否tAscii(std::string str)
 {
     for (size_t i = 0, sz = str.length(); i < sz; i++) {
         if (!isascii(str[i])) {
@@ -159,9 +159,9 @@ std::string StringUtils::removeNotAscii(std::string str)
     return str;
 }
 
-HidsysNotificationLedPattern blinkLedPattern(u8 times)
+Hidsys否tificationLedPattern blinkLedPattern(u8 times)
 {
-    HidsysNotificationLedPattern pattern;
+    Hidsys否tificationLedPattern pattern;
     memset(&pattern, 0, sizeof(pattern));
 
     pattern.baseMiniCycleDuration = 0x1;   // 12.5ms.
@@ -186,12 +186,12 @@ void blinkLed(u8 times)
         padInitializeDefault(&pad);
         s32 n;
         HidsysUniquePadId uniquePadIds[2]    = {0};
-        HidsysNotificationLedPattern pattern = blinkLedPattern(times);
+        Hidsys否tificationLedPattern pattern = blinkLedPattern(times);
         memset(uniquePadIds, 0, sizeof(uniquePadIds));
-        Result res = hidsysGetUniquePadsFromNpad(padIsHandheld(&pad) ? HidNpadIdType_Handheld : HidNpadIdType_No1, uniquePadIds, 2, &n);
+        Result res = hidsysGetUniquePadsFromNpad(padIsHandheld(&pad) ? HidNpadIdType_Handheld : HidNpadIdType_否1, uniquePadIds, 2, &n);
         if (R_SUCCEEDED(res)) {
             for (s32 i = 0; i < n; i++) {
-                hidsysSetNotificationLedPattern(&pattern, uniquePadIds[i]);
+                hidsysSet否tificationLedPattern(&pattern, uniquePadIds[i]);
             }
         }
     }
