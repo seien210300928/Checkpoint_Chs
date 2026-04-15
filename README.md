@@ -2,6 +2,7 @@
 
 一款针对 3DS 和 Switch 的快速且简洁的自制软件存档管理器，使用 C++ 编写。
 ## 中文改版特别说明
+<span style="font-size:18px;"> **没有安装汉化字体的请先前往[一只火狐的杂物间](https://stray-soul.com/softwares.html)处安装中文字库** </span><br>
 <span style="font-size:18px;"> **本中文改版最初版本为3.12.0** </span><br>
 <span style="font-size:18px;"> **本中文改版优先专注于3DS版本的汉化** </span><br>
 <span style="font-size:18px;"> **Switch版本没有就肯定是没做完** </span><br>
