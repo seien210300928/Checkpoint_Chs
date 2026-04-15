@@ -10,4 +10,4 @@ switch/romfs/cheats/
 .vscode/
 .idea
 .DS_Store
-.tool/
+tool/
