@@ -30,7 +30,7 @@ jobs:
           make SUBDIRS=3ds
       - uses: actions/upload-artifact@v4
         with:
-          name: Checkpoint_Chs-Build
+          name: Checkpoint_Chs-3ds
           path: |
             /Checkpoint_Chs/3ds/out/Checkpoint.cia
             /Checkpoint_Chs/3ds/out/Checkpoint.3dsx
