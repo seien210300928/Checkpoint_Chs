@@ -17,8 +17,7 @@
  *
  *   Additional Terms 7.b and 7.c of GPLv3 apply to this file:
  *       * Requiring preservation of specified reasonable legal notices or
- *         author attributions in that material or in the Appropriate Legal
- *         Notices displayed by works containing it.
+ *         author attributions in that material or in the Appropriate Legal Notices displayed by works containing it.
  *       * Prohibiting misrepresentation of the origin of that material,
  *         or requiring that modified versions of such material be marked in
  *         reasonable ways as different from the original version.
@@ -144,7 +143,7 @@ bool Title::load(u64 _id, FS_MediaType _media, FS_CardType _card)
             smdh = loadSMDH(lowId(), highId(), mMedia);
         }
         if (smdh == NULL) {
-            Logging::error("Failed to load title {:X} due to smdh == NULL", mId);
+            Logging::error("加载标题 {:X} 失败，原因：smdh == NULL", mId);
             return false;
         }
 
@@ -166,7 +165,7 @@ bool Title::load(u64 _id, FS_MediaType _media, FS_CardType _card)
                 Result res = io::createDirectory(Archive::sdmc(), mSavePath);
                 if (R_FAILED(res)) {
                     loadTitle = false;
-                    Logging::error("Failed to create backup directory with result 0x{:08X}.", res);
+                    Logging::error("创建备份目录失败，结果：0x{:08X}。", res);
                 }
             }
         }
@@ -177,7 +176,7 @@ bool Title::load(u64 _id, FS_MediaType _media, FS_CardType _card)
                 Result res = io::createDirectory(Archive::sdmc(), mExtdataPath);
                 if (R_FAILED(res)) {
                     loadTitle = false;
-                    Logging::error("Failed to create backup directory with result 0x{:08X}.", res);
+                    Logging::error("创建备份目录失败，结果：0x{:08X}。", res);
                 }
             }
         }
@@ -193,7 +192,7 @@ bool Title::load(u64 _id, FS_MediaType _media, FS_CardType _card)
         Result res     = FSUSER_GetLegacyRomHeader(mMedia, 0LL, headerData);
         if (R_FAILED(res)) {
             delete[] headerData;
-            Logging::error("Failed get legacy rom header with result 0x{:08X}.", res);
+            Logging::error("获取传统ROM头失败，结果：0x{:08X}。", res);
             return false;
         }
 
@@ -214,7 +213,7 @@ bool Title::load(u64 _id, FS_MediaType _media, FS_CardType _card)
 
         res = SPIGetCardType(&mCardType, (_gameCode[0] == 'I') ? 1 : 0);
         if (R_FAILED(res)) {
-            Logging::error("Failed get SPI Card Type with result 0x{:08X}.", res);
+            Logging::error("获取SPI卡类型失败，结果：0x{:08X}。", res);
             return false;
         }
 
@@ -233,7 +232,7 @@ bool Title::load(u64 _id, FS_MediaType _media, FS_CardType _card)
             res = io::createDirectory(Archive::sdmc(), mSavePath);
             if (R_FAILED(res)) {
                 loadTitle = false;
-                Logging::error("Failed to create backup directory with result 0x{:08X}.", res);
+                Logging::error("创建备份目录失败，结果：0x{:08X}。", res);
             }
         }
     }
@@ -258,9 +257,9 @@ std::string Title::mediaTypeString(void)
 {
     switch (mMedia) {
         case MEDIATYPE_SD:
-            return "SD Card";
+            return "SD 卡";
         case MEDIATYPE_GAME_CARD:
-            return "Cartridge";
+            return "卡带";
         case MEDIATYPE_NAND:
             return "NAND";
         default:
@@ -344,46 +343,46 @@ void Title::refreshDirectories(void)
             mFullSavePaths.insert(mFullSavePaths.begin(), StringUtils::UTF8toUTF16("New..."));
         }
         else {
-            Logging::error("Couldn't retrieve the save directory list for the title {}", shortDescription());
+            Logging::error("无法检索该目标的保存目录列表 {}", shortDescription());
         }
 
         // save backups from configuration
         try {
             std::vector<std::u16string> additionalFolders = Configuration::getInstance().additionalSaveFolders(mId);
             if (!additionalFolders.empty()) {
-                Logging::debug("Found {} additional save folders for title {:X}", additionalFolders.size(), mId);
+                Logging::debug("为该目标找到 {} 个额外的保存文件夹 {:X}", additionalFolders.size(), mId);
                 for (std::vector<std::u16string>::const_iterator it = additionalFolders.begin(); it != additionalFolders.end(); ++it) {
-                    Logging::debug("Processing additional save folder: {}", StringUtils::UTF16toUTF8(*it));
+                    Logging::debug("处理额外的保存文件夹: {}", StringUtils::UTF16toUTF8(*it));
                     if (io::directoryExists(Archive::sdmc(), *it)) {
-                        Logging::debug("Additional save folder exists: {}", StringUtils::UTF16toUTF8(*it));
+                        Logging::debug("存在额外的保存文件夹: {}", StringUtils::UTF16toUTF8(*it));
                         // we have other folders to parse
                         Directory list(Archive::sdmc(), *it);
                         if (list.good()) {
-                            Logging::debug("Additional save folder is good: {}", StringUtils::UTF16toUTF8(*it));
+                            Logging::debug("额外的保存文件夹是有效的: {}", StringUtils::UTF16toUTF8(*it));
                             for (size_t i = 0, sz = list.size(); i < sz; i++) {
                                 if (list.folder(i)) {
-                                    Logging::debug("Found save folder: {}", StringUtils::UTF16toUTF8(list.entry(i)));
+                                    Logging::debug("找到保存文件夹: {}", StringUtils::UTF16toUTF8(list.entry(i)));
                                     mSaves.push_back(list.entry(i));
                                     mFullSavePaths.push_back(*it + StringUtils::UTF8toUTF16("/") + list.entry(i));
                                 }
                             }
                         }
                         else {
-                            Logging::error("Additional save folder is not good: {}", StringUtils::UTF16toUTF8(*it));
+                            Logging::error("额外的保存文件夹出现问题: {}", StringUtils::UTF16toUTF8(*it));
                         }
                     }
                     else {
-                        Logging::error("Additional save folder does not exist: {}", StringUtils::UTF16toUTF8(*it));
+                        Logging::error("额外的保存文件夹不存在: {}", StringUtils::UTF16toUTF8(*it));
                     }
                 }
-                Logging::debug("Finished processing additional save folders for title {:X}", mId);
+                Logging::debug("完成处理额外的保存文件夹 {:X}", mId);
             }
         }
         catch (const std::exception& e) {
-            Logging::error("Exception when processing additional save folders: {}", e.what());
+            Logging::error("处理额外保存文件夹时发生异常: {}", e.what());
         }
         catch (...) {
-            Logging::error("Unknown exception when processing additional save folders for title {:X}", mId);
+            Logging::error("处理额外保存文件夹时发生未知异常 for title {:X}", mId);
         }
     }
 
@@ -400,50 +399,50 @@ void Title::refreshDirectories(void)
 
             std::sort(mExtdata.begin(), mExtdata.end());
             std::sort(mFullExtdataPaths.begin(), mFullExtdataPaths.end());
-            mExtdata.insert(mExtdata.begin(), StringUtils::UTF8toUTF16("New..."));
-            mFullExtdataPaths.insert(mFullExtdataPaths.begin(), StringUtils::UTF8toUTF16("New..."));
+            mExtdata.insert(mExtdata.begin(), StringUtils::UTF8toUTF16("新建……"));
+            mFullExtdataPaths.insert(mFullExtdataPaths.begin(), StringUtils::UTF8toUTF16("新建……"));
         }
         else {
-            Logging::error("Couldn't retrieve the extdata directory list for the title {}", shortDescription());
+            Logging::error("无法检索该目标外部数据目录列表 {}", shortDescription());
         }
 
         // extdata backups from configuration
         try {
             std::vector<std::u16string> additionalFolders = Configuration::getInstance().additionalExtdataFolders(mId);
             if (!additionalFolders.empty()) {
-                Logging::debug("Found {} additional extdata folders for title {:X}", additionalFolders.size(), mId);
+                Logging::debug("找到 {} 个附加的外部数据文件夹 {:X}", additionalFolders.size(), mId);
                 for (std::vector<std::u16string>::const_iterator it = additionalFolders.begin(); it != additionalFolders.end(); ++it) {
-                    Logging::debug("Processing additional extdata folder: {}", StringUtils::UTF16toUTF8(*it));
+                    Logging::debug("处理附加的外部数据文件夹: {}", StringUtils::UTF16toUTF8(*it));
                     if (io::directoryExists(Archive::sdmc(), *it)) {
-                        Logging::debug("Additional extdata folder exists: {}", StringUtils::UTF16toUTF8(*it));
+                        Logging::debug("附加的外部数据文件夹存在: {}", StringUtils::UTF16toUTF8(*it));
                         // we have other folders to parse
                         Directory list(Archive::sdmc(), *it);
                         if (list.good()) {
-                            Logging::debug("Additional extdata folder is good: {}", StringUtils::UTF16toUTF8(*it));
+                            Logging::debug("附加的外部数据文件夹良好: {}", StringUtils::UTF16toUTF8(*it));
                             for (size_t i = 0, sz = list.size(); i < sz; i++) {
                                 if (list.folder(i)) {
-                                    Logging::debug("Found extdata folder: {}", StringUtils::UTF16toUTF8(list.entry(i)));
+                                    Logging::debug("找到附加的外部数据文件夹: {}", StringUtils::UTF16toUTF8(list.entry(i)));
                                     mExtdata.push_back(list.entry(i));
                                     mFullExtdataPaths.push_back(*it + StringUtils::UTF8toUTF16("/") + list.entry(i));
                                 }
                             }
                         }
                         else {
-                            Logging::error("Additional extdata folder is not good: {}", StringUtils::UTF16toUTF8(*it));
+                            Logging::error("附加的外部数据文件夹不良好: {}", StringUtils::UTF16toUTF8(*it));
                         }
                     }
                     else {
-                        Logging::error("Additional extdata folder does not exist: {}", StringUtils::UTF16toUTF8(*it));
+                        Logging::error("附加的外部数据文件夹不存在: {}", StringUtils::UTF16toUTF8(*it));
                     }
                 }
-                Logging::debug("Finished processing additional extdata folders for title {:X}", mId);
+                Logging::debug("已完成处理目标的附加的外部数据文件夹 {:X}", mId);
             }
         }
         catch (const std::exception& e) {
-            Logging::error("Exception when processing additional extdata folders: {}", e.what());
+            Logging::error("处理附加的外部数据文件夹时发生异常: {}", e.what());
         }
         catch (...) {
-            Logging::error("Unknown exception when processing additional extdata folders for title {:X}", mId);
+            Logging::error("处理附加的外部数据文件夹时发生未知异常 for title {:X}", mId);
         }
     }
 }

@@ -39,11 +39,11 @@ int main()
         res = servicesInit();
     }
     catch (const std::exception& e) {
-        res = consoleDisplayError(std::string("Error during services init. ") + e.what(), -1);
+        res = consoleDisplayError(std::string("服务初始化时发生错误。") + e.what(), -1);
         exit(res);
     }
     catch (...) {
-        res = consoleDisplayError("Unknown error during startup", -2);
+        res = consoleDisplayError("启动时发生未知错误", -2);
         exit(res);
     }
 
@@ -55,7 +55,7 @@ int main()
     try {
         g_screen       = std::make_unique<MainScreen>();
         auto uiIsReady = std::chrono::high_resolution_clock::now();
-        Logging::info("Loading took {} ms", std::chrono::duration_cast<std::chrono::milliseconds>(uiIsReady - start).count());
+        Logging::info("加载耗时 {} 毫秒", std::chrono::duration_cast<std::chrono::milliseconds>(uiIsReady - start).count());
 
         while (aptMainLoop()) {
             touchPosition touch;
@@ -77,10 +77,10 @@ int main()
         }
     }
     catch (const std::exception& e) {
-        consoleDisplayError(std::string("Error during main. ") + e.what(), -5);
+        consoleDisplayError(std::string("主程序运行时发生错误。") + e.what(), -5);
     }
     catch (...) {
-        res = consoleDisplayError("Unknown error during main", -6);
+        res = consoleDisplayError("主程序运行时发生未知错误", -6);
     }
 
     exit(0);

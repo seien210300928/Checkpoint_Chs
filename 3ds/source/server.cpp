@@ -78,7 +78,7 @@ namespace {
             send(clientSocket, response.body.c_str(), response.body.length(), 0);
         }
         else {
-            // 404 for unregistered endpoints
+            // 未注册端点返回404
             std::string response = "HTTP/1.1 404 Not Found\r\nContent-Length: 0\r\n\r\n";
             send(clientSocket, response.c_str(), response.length(), 0);
         }
@@ -89,7 +89,7 @@ namespace {
         struct sockaddr_in clientAddr;
         u32 clientLen = sizeof(clientAddr);
 
-        // Set server socket to non-blocking
+        // 将服务器套接字设置为非阻塞模式
         fcntl(serverSocket, F_SETFL, fcntl(serverSocket, F_GETFL, 0) | O_NONBLOCK);
 
         isRunning = true;
@@ -97,17 +97,17 @@ namespace {
             s32 clientSocket = accept(serverSocket, (struct sockaddr*)&clientAddr, &clientLen);
 
             if (clientSocket >= 0) {
-                // Set client socket to blocking for simpler sending
+                // 将客户端套接字设置为阻塞模式，简化发送逻辑
                 fcntl(clientSocket, F_SETFL, fcntl(clientSocket, F_GETFL, 0) & ~O_NONBLOCK);
                 handleHttpRequest(clientSocket);
                 close(clientSocket);
             }
             else if (errno != EAGAIN) {
-                // FIXME do something
+                // 待修复：需要处理异常
             }
 
-            // Prevent 100% CPU usage
-            svcSleepThread(100000000); // 100ms
+            // 避免CPU占用率100%
+            svcSleepThread(100000000); // 100毫秒
         }
     }
 }
@@ -115,13 +115,13 @@ namespace {
 void Server::registerHandler(const std::string& path, Server::HttpHandler handler)
 {
     handlers[path] = handler;
-    Logging::info("Registered HTTP handler for path {}", path);
+    Logging::info("已注册路径 {} 的HTTP处理程序", path);
 }
 
 void Server::unregisterHandler(const std::string& path)
 {
     handlers.erase(path);
-    Logging::info("Unregistered HTTP handler for path {}", path);
+    Logging::info("已注销路径 {} 的HTTP处理程序", path);
 }
 
 bool Server::isRunning(void)
@@ -138,7 +138,7 @@ void Server::init()
 {
     serverSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_IP);
     if (serverSocket < 0) {
-        Logging::error("Failed to create socket with error {}: {}", errno, strerror(errno));
+        Logging::error("创建套接字失败，错误码 {}：{}", errno, strerror(errno));
         return;
     }
 
@@ -149,14 +149,14 @@ void Server::init()
     serverAddr.sin_addr.s_addr = gethostid();
 
     if (bind(serverSocket, (struct sockaddr*)&serverAddr, sizeof(serverAddr)) != 0) {
-        Logging::error("Failed to bind to port {} with error {}", SERVER_PORT, errno);
+        Logging::error("绑定端口 {} 失败，错误码 {}", SERVER_PORT, errno);
         close(serverSocket);
         serverSocket = -1;
         return;
     }
 
     if (listen(serverSocket, 5) != 0) {
-        Logging::error("Failed to listen on socket with error {}: {}", errno, strerror(errno));
+        Logging::error("套接字监听失败，错误码 {}：{}", errno, strerror(errno));
         close(serverSocket);
         serverSocket = -1;
         return;
@@ -181,5 +181,5 @@ void Server::exit()
 
     handlers.clear();
 
-    Logging::trace("HTTP server stopped");
+    Logging::trace("HTTP服务器已停止");
 }

@@ -37,7 +37,7 @@ CheatManager::CheatManager(void)
             fclose(in);
         }
         else {
-            Logging::warning("Failed to open {} with errno {}.", path, errno);
+            Logging::warning("无法打开 {}，错误代码 {}.", path, errno);
         }
     }
     else {
@@ -63,7 +63,7 @@ CheatManager::CheatManager(void)
             fclose(f);
         }
         else {
-            Logging::warning("Failed to open {} with errno {}.", path, errno);
+            Logging::warning("无法打开 {}，错误代码 {}.", path, errno);
         }
     }
 }
@@ -98,6 +98,6 @@ void CheatManager::save(const std::string& key, const std::vector<std::string>& 
         fclose(f);
     }
     else {
-        Logging::error("Failed to write {} with errno {}.", outPath, errno);
+        Logging::error("无法写入 {}，错误代码 {}.", outPath, errno);
     }
 }

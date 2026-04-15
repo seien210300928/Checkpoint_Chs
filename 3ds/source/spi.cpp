@@ -405,20 +405,20 @@ Result SPIGetCardType(CardType* type, int infrared)
     u32 jedecOrderedList[] = {0x204012, 0x621600, 0x204013, 0x621100, 0x204014, 0x202017};
 
     u32 maxTries = (infrared == -1) ? 2 : 1; // note: infrared = -1 fails 1/3 of the time
-    while (tries < maxTries) {
+   while (tries < maxTries) {
         res = SPIReadJEDECIDAndStatusReg(t, &jedec, &sr); // dummy
         if (R_SUCCEEDED(res)) {
-            Logging::info("Found JEDEC: 0x{:016X}", jedec);
-            Logging::info("CardType (While inside maxTries loop): {}", (int)t);
+            Logging::info("检测到JEDEC：0x{:016X}", jedec);
+            Logging::info("卡类型（maxTries循环内）：{}", (int)t);
             if (std::find(std::begin(knownJEDECS), std::end(knownJEDECS), jedec) != std::end(knownJEDECS)) {
-                Logging::info("Found a jedec equal to one in the ordered list. Type: {}", (int)*type);
+                Logging::info("检测到匹配有序列表的JEDEC，类型：{}", (int)*type);
             }
             else {
-                Logging::info("JEDEC ID not documented yet!");
+                Logging::info("JEDEC ID暂未记录！");
             }
         }
         else {
-            Logging::warning("Unable to retrieve JEDEC id with result 0x{:016X}.", res);
+            Logging::warning("无法获取JEDEC ID，结果：0x{:016X}。", res);
         }
 
         if (res)
@@ -440,10 +440,10 @@ Result SPIGetCardType(CardType* type, int infrared)
         t = FLASH_INFRARED_DUMMY;
     }
 
-    Logging::info("CardType (after the maxTries loop): {}", (int)t);
+    Logging::info("卡类型（maxTries循环后）：{}", (int)t);
 
     if (t == EEPROM_512B) {
-        Logging::info("Type is EEPROM_512B: {}", (int)t);
+        Logging::info("类型为EEPROM_512B：{}", (int)t);
         *type = t;
         return 0;
     }
@@ -465,7 +465,7 @@ Result SPIGetCardType(CardType* type, int infrared)
         }
 
         *type = t;
-        Logging::info("Type: {}", (int)t);
+        Logging::info("类型：{}", (int)t);
         return 0;
     }
     else if (t == FLASH_INFRARED_DUMMY) {
@@ -480,7 +480,7 @@ Result SPIGetCardType(CardType* type, int infrared)
     else {
         if (infrared == 1) {
             *type = NO_CHIP; // did anything go wrong?
-            Logging::info("infrared is 1, *type = NO_CHIP");
+            Logging::info("红外标识为1，设置类型为无芯片");
         }
         if (jedec == 0x204017) {
             *type = FLASH_8MB;
@@ -498,7 +498,7 @@ Result SPIGetCardType(CardType* type, int infrared)
             }
         }
 
-        Logging::info("*type = NO_CHIP");
+        Logging::info("设置类型为无芯片");
         *type = NO_CHIP;
         return 0;
     }

@@ -38,9 +38,9 @@ Result consoleDisplayError(const std::string& message, Result res)
 {
     consoleInit(GFX_TOP, nullptr);
     printf("\x1b[2;13HCheckpoint v%d.%d.%d-%s", VERSION_MAJOR, VERSION_MINOR, VERSION_MICRO, GIT_REV);
-    printf("\x1b[5;1HError during startup: \x1b[31m0x%08lX\x1b[0m", res);
-    printf("\x1b[8;1HDescription: \x1b[33m%s\x1b[0m", message.c_str());
-    printf("\x1b[29;16HPress START to exit.");
+    printf("\x1b[5;1H启动时错误: \x1b[31m0x%08lX\x1b[0m", res);
+    printf("\x1b[8;1H错误信息: \x1b[33m%s\x1b[0m", message.c_str());
+    printf("\x1b[29;16H按START退出。");
     gfxFlushBuffers();
     gfxSwapBuffers();
     gspWaitForVBlank();
@@ -65,16 +65,16 @@ Result servicesInit(void)
     Logging::init();
     ATEXIT(Logging::exit);
 
-    Logging::info("Checkpoint loading started...");
+    Logging::info("Checkpoint 开始加载...");
 
     Handle hbldrHandle;
     if (R_FAILED(res = svcConnectToPort(&hbldrHandle, "hb:ldr"))) {
-        return consoleDisplayError("Rosalina not found on this system.\nAn updated CFW is required to launch Checkpoint.", res);
+        return consoleDisplayError("未找到Rosalina。\n需要更新CFW才能运行Checkpoint。", res);
     }
     svcCloseHandle(hbldrHandle);
 
     if (R_FAILED(res = Archive::init())) {
-        return consoleDisplayError("Archive::init failed.", res);
+        return consoleDisplayError("Archive::init 失败。", res);
     }
     ATEXIT(Archive::exit);
 
@@ -110,11 +110,11 @@ Result servicesInit(void)
             ATEXIT(Server::exit);
         }
         else {
-            Logging::warning("socInit failed");
+            Logging::warning("socInit 失败");
         }
     }
     else {
-        Logging::warning("Failed to create socket buffer.");
+        Logging::warning("创建套接字缓冲区失败。");
     }
 
     Threads::executeTask(TitleLoader::loadTitlesThread);
@@ -128,7 +128,7 @@ Result servicesInit(void)
     // consoleDebugInit(debugDevice_SVC);
     // while (aptMainLoop() && !(hidKeysDown() & KEY_START)) { hidScanInput(); }
 
-    Logging::info("Checkpoint loading finished!");
+    Logging::info("Checkpoint 加载完成！");
 
     return 0;
 }

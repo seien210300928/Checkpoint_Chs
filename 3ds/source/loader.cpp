@@ -514,7 +514,7 @@ void TitleLoader::loadTitles(bool forceRefreshParam)
 
             auto importEnd      = std::chrono::high_resolution_clock::now();
             auto importDuration = std::chrono::duration_cast<std::chrono::milliseconds>(importEnd - sectionStart);
-            Logging::debug("Title cache import completed in {} ms", importDuration.count());
+Logging::debug("标题缓存导入完成，耗时 {} 毫秒", importDuration.count());
 
             g_loadingTitlesCounter = titleSaves.size() + titleExtdatas.size();
 
@@ -529,7 +529,7 @@ void TitleLoader::loadTitles(bool forceRefreshParam)
 
             auto refreshEnd      = std::chrono::high_resolution_clock::now();
             auto refreshDuration = std::chrono::duration_cast<std::chrono::milliseconds>(refreshEnd - sectionStart);
-            Logging::debug("Directory refresh completed in {} ms", refreshDuration.count());
+            Logging::debug("目录刷新完成，耗时 {} 毫秒", refreshDuration.count());
         }
         else {
             u32 count     = 0;
@@ -629,12 +629,12 @@ void TitleLoader::loadTitles(bool forceRefreshParam)
 
         if (!optimizedLoad || forceRefreshParam) {
             auto exportStart = std::chrono::high_resolution_clock::now();
-            Logging::debug("Starting title cache export");
+            Logging::debug("开始导出标题缓存");
             exportTitleListCache(titleSaves, savecachePath);
             exportTitleListCache(titleExtdatas, extdatacachePath);
             auto exportEnd      = std::chrono::high_resolution_clock::now();
             auto exportDuration = std::chrono::duration_cast<std::chrono::milliseconds>(exportEnd - exportStart);
-            Logging::debug("Title cache export completed in {} ms", exportDuration.count());
+            Logging::debug("标题缓存导出完成，耗时 {} 毫秒", exportDuration.count());
         }
 
         FS_CardType cardType;
@@ -671,15 +671,15 @@ void TitleLoader::loadTitles(bool forceRefreshParam)
         }
     }
     catch (const std::exception& e) {
-        Logging::error("Exception in loadTitles: {}", e.what());
+        Logging::error("loadTitles函数中发生异常：{}", e.what());
     }
     catch (...) {
-        Logging::error("Unknown exception in loadTitles");
+        Logging::error("loadTitles函数中发生未知异常");
     }
 
     auto totalEnd      = std::chrono::high_resolution_clock::now();
     auto totalDuration = std::chrono::duration_cast<std::chrono::milliseconds>(totalEnd - totalStart);
-    Logging::debug("Title list loaded in {} ms (total)", totalDuration.count());
+    Logging::debug("标题列表加载完成，总耗时 {} 毫秒", totalDuration.count());
 }
 
 void TitleLoader::loadTitlesThread(void)
