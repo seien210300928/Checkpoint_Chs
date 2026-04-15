@@ -1,0 +1,28 @@
+name: Build_switch
+
+on:
+  push:
+    branches: [ master ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: 
+      image: devkitpro/devkita64:latest
+
+    steps:
+      - name: "Clone"
+        run: git clone --recurse-submodules -j8 https://github.com/seien210300928/Checkpoint_Chs.git /Checkpoint_Chs
+      - name: "Build_switch"
+        working-directory: "/Checkpoint_Chs"
+        run: |
+          make SUBDIRS=switch
+          mv /root/Checkpoint_Chs/switch/out/Checkpoint.elf /root/Checkpoint_Chs/switch/out/Checkpoint.nro.elf
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Checkpoint_Chs-switch
+          path: |
+            /Checkpoint_Chs/switch/out/Checkpoint.nro
+            /Checkpoint_Chs/switch/out/Checkpoint.nro.elf
