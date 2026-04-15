@@ -1,41 +1,40 @@
 ---
-name: Bug Report
-about: Please fill the fields with all the informations important for the maintainers
-  to get your issue fixed or sorted out.
-title: Bug Report
+name: 错误报告
+about: 请填写对维护者修复或处理问题重要的所有信息
+title: 错误报告
 labels: ''
 assignees: ''
 
 ---
 
-**Describe the bug**
-A clear and concise description of what the bug is.
+**描述该错误**
+清晰简明地描述该错误是什么。
 
-**To Reproduce**
-Steps to reproduce the behavior:
-1. Go to '...'
-2. Click on '....'
-3. Scroll down to '....'
-4. See error
+**如何复现**
+重现该行为的步骤：
+1. 转到 '...'
+2. 点击 '....'
+3. 滚动到 '....'
+4. 看到错误
 
-**Expected behavior**
-A clear and concise description of what you expected to happen.
+**预期行为**
+清晰简明地描述你期望发生的情况。
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+**截图**
+如果适用，请添加截图以帮助解释问题。
 
-**3DS:**
-- Entrypoint:
-- System version:
-- Checkpoint version:
-- Result code (if available):
+**3DS：**
+- 入口点：
+- 系统版本：
+- Checkpoint 版本：
+- 结果代码（如果可用）：
 
-**Switch:**
-- Entrypoint:
-- System version:
-- Checkpoint version:
-- SD Card Filesystem:
-- Result code (if available):
+**Switch：**
+- 入口点：
+- 系统版本：
+- Checkpoint 版本：
+- SD 卡文件系统：
+- 结果代码（如果可用）：
 
-**Additional context**
-Add any other context about the problem here.
+**其他补充说明**
+请在此添加任何其他关于该问题的补充说明。
