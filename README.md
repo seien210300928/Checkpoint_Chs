@@ -94,7 +94,8 @@ Checkpoint 使用以下目录来存储其生成的文件。请注意，所有工
 
 ## 编译
 
-devkitARM 和 devkitA64 是编译 Checkpoint 3DS 与 Switch 版本所必需的。更多信息请访问 [devkitpro.org](https://devkitpro.org/wiki/Getting_Started)。按以下方式安装或更新依赖项。
+devkitARM 和 devkitA64 是编译 Checkpoint 3DS 与 Switch 版本所必需的。更多信息请访问 [devkitpro.org](https://devkitpro.org/wiki/Getting_Started)。按以下方式安装或更新依赖项。  
+本中文改版作者推荐 [devkitpro/devkitarm](https://hub.docker.com/r/devkitpro/devkitarm) 和 [devkitpro/devkita64](https://hub.docker.com/r/devkitpro/devkita64) 的docker环境，本项目就是使用其构建。
 
 ### 3DS 版本
 
