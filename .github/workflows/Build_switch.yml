@@ -23,5 +23,5 @@ jobs:
         with:
           name: Checkpoint_Chs-switch
           path: |
-            /Checkpoint_Chs/switch/out/Checkpoint.nro
-            /Checkpoint_Chs/switch/out/Checkpoint.nro.elf
+            /Checkpoint_Chs/switch/out/Checkpoint_中文版.nro
+            /Checkpoint_Chs/switch/out/Checkpoint_中文版.nro.elf

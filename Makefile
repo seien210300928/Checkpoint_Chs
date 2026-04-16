@@ -18,7 +18,7 @@ clean:
 
 switch: switch_cheats
 	@$(MAKE) -C switch VERSION_MAJOR=${VERSION_MAJOR} VERSION_MINOR=${VERSION_MINOR} VERSION_MICRO=${VERSION_MICRO} GIT_REV=${GIT_REV} CHEAT_SIZE_DECOMPRESSED=$(shell stat -t "sharkive/build/switch.json" | awk '{print $$2}')
-	mv $(CURDIR)/switch/out/Checkpoint.elf $(CURDIR)/switch/out/Checkpoint.nro.elf
+	mv $(CURDIR)/switch/out/Checkpoint_中文版.elf $(CURDIR)/switch/out/Checkpoint_中文版.nro.elf
 format:
 	@for dir in $(SUBDIRS); do $(MAKE) -C $$dir format; done
 

@@ -32,6 +32,6 @@ jobs:
         with:
           name: Checkpoint_Chs-3ds
           path: |
-            /Checkpoint_Chs/3ds/out/Checkpoint.cia
-            /Checkpoint_Chs/3ds/out/Checkpoint.3dsx
-            /Checkpoint_Chs/3ds/out/Checkpoint.elf
+            /Checkpoint_Chs/3ds/out/Checkpoint_中文版.cia
+            /Checkpoint_Chs/3ds/out/Checkpoint_中文版.3dsx
+            /Checkpoint_Chs/3ds/out/Checkpoint_中文版.elf
