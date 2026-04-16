@@ -30,8 +30,8 @@ include $(DEVKITPRO)/libnx/switch_rules
 #     - icon.jpg
 #     - <libnx folder>/default_icon.jpg
 #---------------------------------------------------------------------------------
-APP_TITLE	:=	Checkpoint
-APP_AUTHOR	:=	Bernardo Giordano, FlagBrew
+APP_TITLE	:=	Checkpoint 中文版
+APP_AUTHOR	:=	Bernardo Giordano, FlagBrew, Seien_MtF(汉化)
 APP_VERSION	:=	${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_MICRO}
 
 TARGET			:=	$(subst $e ,_,$(notdir $(APP_TITLE)))
