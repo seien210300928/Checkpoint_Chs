@@ -33,7 +33,7 @@ include $(DEVKITARM)/3ds_rules
 #---------------------------------------------------------------------------------
 APP_TITLE		:= 	Checkpoint 中文版
 APP_DESCRIPTION	:=	Checkpoint: 存档管理器
-APP_AUTHOR		:=	Bernardo Giordano, FlagBrew, Seien_MtF
+APP_AUTHOR		:=	Bernardo Giordano, FlagBrew, Seien_MtF(汉化)
 
 TARGET			:=	$(subst $e ,_,$(notdir $(APP_TITLE)))
 OUTDIR			:=	out
