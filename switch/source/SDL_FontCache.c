@@ -145,15 +145,15 @@ FC_GlyphData FC_MakeGlyphData(int cache_level, Sint16 x, Sint16 y, Uint16 w, Uin
 // Enough to hold all of the ascii characters and some.
 #define FC_DEFAULT_NUM_BUCKETS 300
 
-typedef struct FC_Map否de {
+typedef struct FC_MapNode {
     Uint32 key;
     FC_GlyphData value;
-    struct FC_Map否de* next;
-} FC_Map否de;
+    struct FC_MapNode* next;
+} FC_MapNode;
 
 typedef struct FC_Map {
     int num_buckets;
-    FC_Map否de** buckets;
+    FC_MapNode** buckets;
 } FC_Map;
 
 static FC_Map* FC_MapCreate(int num_buckets)
@@ -162,7 +162,7 @@ static FC_Map* FC_MapCreate(int num_buckets)
     FC_Map* map = (FC_Map*)malloc(sizeof(FC_Map));
 
     map->num_buckets = num_buckets;
-    map->buckets     = (FC_Map否de**)malloc(num_buckets * sizeof(FC_Map否de*));
+    map->buckets     = (FC_MapNode**)malloc(num_buckets * sizeof(FC_MapNode*));
 
     for (i = 0; i < num_buckets; ++i) {
         map->buckets[i] = NULL;
@@ -180,9 +180,9 @@ static void FC_MapFree(FC_Map* map)
     // Go through each bucket
     for (i = 0; i < map->num_buckets; ++i) {
         // Delete the nodes in order
-        FC_Map否de* node = map->buckets[i];
+        FC_MapNode* node = map->buckets[i];
         while (node != NULL) {
-            FC_Map否de* last = node;
+            FC_MapNode* last = node;
             node             = node->next;
             free(last);
         }
@@ -192,11 +192,11 @@ static void FC_MapFree(FC_Map* map)
     free(map);
 }
 
-// 否te: Does not handle duplicates in any special way.
+// Note: Does not handle duplicates in any special way.
 static FC_GlyphData* FC_MapInsert(FC_Map* map, Uint32 codepoint, FC_GlyphData glyph)
 {
     Uint32 index;
-    FC_Map否de* node;
+    FC_MapNode* node;
     if (map == NULL)
         return NULL;
 
@@ -205,7 +205,7 @@ static FC_GlyphData* FC_MapInsert(FC_Map* map, Uint32 codepoint, FC_GlyphData gl
 
     // If this bucket is empty, create a node and return its value
     if (map->buckets[index] == NULL) {
-        node = map->buckets[index] = (FC_Map否de*)malloc(sizeof(FC_Map否de));
+        node = map->buckets[index] = (FC_MapNode*)malloc(sizeof(FC_MapNode));
         node->key                  = codepoint;
         node->value                = glyph;
         node->next                 = NULL;
@@ -215,7 +215,7 @@ static FC_GlyphData* FC_MapInsert(FC_Map* map, Uint32 codepoint, FC_GlyphData gl
     for (node = map->buckets[index]; node != NULL; node = node->next) {
         // Find empty node and add a new one on.
         if (node->next == NULL) {
-            node->next = (FC_Map否de*)malloc(sizeof(FC_Map否de));
+            node->next = (FC_MapNode*)malloc(sizeof(FC_MapNode));
             node       = node->next;
 
             node->key   = codepoint;
@@ -231,7 +231,7 @@ static FC_GlyphData* FC_MapInsert(FC_Map* map, Uint32 codepoint, FC_GlyphData gl
 static FC_GlyphData* FC_MapFind(FC_Map* map, Uint32 codepoint)
 {
     Uint32 index;
-    FC_Map否de* node;
+    FC_MapNode* node;
     if (map == NULL)
         return NULL;
 
@@ -598,7 +598,7 @@ static Uint8 FC_GrowGlyphCache(FC_Font* font)
     SDL_Texture* new_level =
         SDL_CreateTexture(font->renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, font->height * 12, font->height * 12);
     if (new_level == NULL || !FC_SetGlyphCacheLevel(font, font->glyph_cache_count, new_level)) {
-        FC_Log("Error: SDL_FontCache ran out of packing space and could not add another cache level.\n");
+        FC_Log("错误:SDL_FontCache 包装空间不足,无法添加另一个缓存级别.\n");
         SDL_DestroyTexture(new_level);
         return 0;
     }
@@ -710,7 +710,7 @@ Uint8 FC_UploadGlyphCache(FC_Font* font, int cache_level, SDL_Surface* data_surf
         SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, old_filter_mode);
     }
     if (new_level == NULL || !FC_SetGlyphCacheLevel(font, cache_level, new_level)) {
-        FC_Log("Error: SDL_FontCache ran out of packing space and could not add another cache level.\n");
+        FC_Log("错误:SDL_FontCache 包装空间不足,无法添加另一个缓存级别.\n");
         SDL_DestroyTexture(new_level);
         return 0;
     }
@@ -834,7 +834,7 @@ static void FC_LoadGlyphsFromTTF(FC_Font* font, TTF_Font* ttf, SDL_Surface** sur
             int i = *num_surfaces - 1;
             if (*num_surfaces >= FC_LOAD_MAX_SURFACES) {
                 // Can't do any more!
-                FC_Log("SDL_FontCache error: Could not create enough cache surfaces to fit all of the loading string!\n");
+                FC_Log("SDL_FontCache 错误:无法创建足够的缓存表面来容纳所有加载字符串!\n");
                 SDL_FreeSurface(glyph_surf);
                 break;
             }
@@ -955,7 +955,7 @@ Uint8 FC_LoadFont_RW(FC_Font* font, FC_Target* renderer, SDL_RWops* file_rwops_t
         return 0;
 
     if (!TTF_WasInit() && TTF_Init() < 0) {
-        FC_Log("Unable to initialize SDL_ttf: %s \n", TTF_GetError());
+        FC_Log("无法初始化 SDL_ttf:%s \n", TTF_GetError());
         if (own_rwops) {
             SDL_RWclose(file_rwops_ttf);
             SDL_RWclose(file_rwops_ext);
@@ -967,7 +967,7 @@ Uint8 FC_LoadFont_RW(FC_Font* font, FC_Target* renderer, SDL_RWops* file_rwops_t
     ext = TTF_OpenFontRW(file_rwops_ext, own_rwops, pointSize);
 
     if (ttf == NULL || ext == NULL) {
-        FC_Log("Unable to load TrueType font: %s \n", TTF_GetError());
+        FC_Log("无法加载 TrueType 字体:%s \n", TTF_GetError());
         if (own_rwops) {
             SDL_RWclose(file_rwops_ttf);
             SDL_RWclose(file_rwops_ext);
@@ -1137,7 +1137,7 @@ unsigned int FC_GetNumCodepoints(FC_Font* font)
     glyphs = font->glyphs;
 
     for (i = 0; i < glyphs->num_buckets; ++i) {
-        FC_Map否de* node;
+        FC_MapNode* node;
         for (node = glyphs->buckets[i]; node != NULL; node = node->next) {
             result++;
         }
@@ -1157,7 +1157,7 @@ void FC_GetCodepoints(FC_Font* font, Uint32* result)
     glyphs = font->glyphs;
 
     for (i = 0; i < glyphs->num_buckets; ++i) {
-        FC_Map否de* node;
+        FC_MapNode* node;
         for (node = glyphs->buckets[i]; node != NULL; node = node->next) {
             result[count] = node->key;
             count++;
@@ -1181,7 +1181,7 @@ Uint8 FC_GetGlyphData(FC_Font* font, FC_GlyphData* result, Uint32 codepoint)
         FC_GetUTF8FromCodepoint(buff, codepoint);
         cache_image = FC_GetGlyphCacheLevel(font, font->last_glyph.cache_level);
         if (cache_image == NULL) {
-            FC_Log("SDL_FontCache: Failed to load cache image, so cannot add new glyphs!\n");
+            FC_Log("SDL_FontCache:无法加载缓存图像,因此无法添加新字形!\n");
             return 0;
         }
 
@@ -2409,7 +2409,7 @@ void FC_ResetFontFromRendererReset(FC_Font* font, SDL_Renderer* renderer, Uint32
         FC_LoadFontFromTTF(font, renderer, ttf, ext, col);
     font->owns_ttf_source = owns_ttf;
 
-    // 恢复 fallback fonts
+    // Restore fallback fonts
     font->num_fallbacks = saved_num_fallbacks;
     for (int fi = 0; fi < saved_num_fallbacks; fi++)
         font->ttf_fallbacks[fi] = saved_fallbacks[fi];

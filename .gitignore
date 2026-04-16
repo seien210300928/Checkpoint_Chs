@@ -12,4 +12,4 @@ switch/romfs/cheats/
 .DS_Store
 tool/
 switch/source/*.py
-switch/source/*.bak
+switch/source/*/*.bak

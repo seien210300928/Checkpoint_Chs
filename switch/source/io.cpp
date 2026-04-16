@@ -18,7 +18,7 @@
  *   Additional Terms 7.b and 7.c of GPLv3 apply to this file:
  *       * Requiring preservation of specified reasonable legal notices or
  *         author attributions in that material or in the Appropriate Legal
- *         否tices displayed by works containing it.
+ *         Notices displayed by works containing it.
  *       * Prohibiting misrepresentation of the origin of that material,
  *         or requiring that modified versions of such material be marked in
  *         reasonable ways as different from the original version.
@@ -56,12 +56,12 @@ void io::copyFile(const std::string& srcPath, const std::string& dstPath)
 
     FILE* src = fopen(srcPath.c_str(), "rb");
     if (src == NULL) {
-        Logging::error("复制过程中打开源文件 {} 失败，错误代码 {}。跳过...", srcPath, errno);
+        Logging::error("复制期间无法打开源文件 {},错误代码为 {}.正在跳过...", srcPath, errno);
         return;
     }
     FILE* dst = fopen(dstPath.c_str(), "wb");
     if (dst == NULL) {
-        Logging::error("复制过程中打开目标文件 {} 失败，错误代码 {}。跳过...", dstPath, errno);
+        Logging::error("复制期间无法打开目标文件 {},错误代码为 {}.正在跳过...", dstPath, errno);
         fclose(src);
         return;
     }
@@ -81,7 +81,7 @@ void io::copyFile(const std::string& srcPath, const std::string& dstPath)
     while (offset < sz) {
         u32 count = fread((char*)buf, 1, BUFFER_SIZE, src);
         if (count == 0) {
-            Logging::error("fread returned 0 for file {} at offset {}/{} with errno {}. Aborting copy.", srcPath, offset, sz, errno);
+            Logging::error("对于位于偏移量 {}/{} 处的文件 {},fread 返回 0,错误号为 {}.正在中止复制.", srcPath, offset, sz, errno);
             break;
         }
         fwrite((char*)buf, 1, count, dst);
@@ -101,7 +101,7 @@ void io::copyFile(const std::string& srcPath, const std::string& dstPath)
 
     // commit each file to the save
     if (dstPath.rfind("save:/", 0) == 0) {
-        Logging::error("正在将文件 {} 提交到存档。", dstPath);
+        Logging::error("正在将文件 {} 提交到保存存档.", dstPath);
         fsdevCommitDevice("save");
     }
 
@@ -185,7 +185,7 @@ std::tuple<bool, Result, std::string> io::backup(size_t index, AccountUid uid, s
     Title title;
     getTitle(title, uid, index);
 
-    Logging::info("开始备份 {}。游戏ID：0x{:016X}；用户ID：0x{:X}{:X}。", title.name().c_str(), title.id(), title.userId().uid[1],
+    Logging::info("已开始备份 {}.标题 ID:0x{:016X};用户 ID:0x{:X}{:X}.", title.name().c_str(), title.id(), title.userId().uid[1],
         title.userId().uid[0]);
 
     FsFileSystem fileSystem;
@@ -205,13 +205,13 @@ std::tuple<bool, Result, std::string> io::backup(size_t index, AccountUid uid, s
         int rc = FileSystem::mountDevice(fileSystem);
         if (rc == -1) {
             FileSystem::unmountDevice();
-            Logging::error("备份时挂载文件系统失败。游戏ID：0x{:016X}。", title.id());
-            return std::make_tuple(false, -2, "挂载存档失败。");
+            Logging::error("备份期间无法挂载文件系统.标题 ID:0x{:016X}.", title.id());
+            return std::make_tuple(false, -2, "Failed to mount save.");
         }
     }
     else {
-        Logging::error("Failed to mount filesystem during backup with result 0x{:08X}. Title id: 0x{:016X}.", res, title.id());
-        return std::make_tuple(false, res, "挂载存档失败。");
+        Logging::error("备份期间无法挂载文件系统,结果为 0x{:08X}.标题 ID:0x{:016X}.", res, title.id());
+        return std::make_tuple(false, res, "安装保存失败.");
     }
 
     std::string suggestion;
@@ -223,7 +223,7 @@ std::tuple<bool, Result, std::string> io::backup(size_t index, AccountUid uid, s
         suggestion = DateTime::dateTimeStr() + " " +
                      (StringUtils::containsInvalidChar(Account::username(title.userId()))
                              ? ""
-                             : StringUtils::remove否tAscii(StringUtils::removeAccents(Account::username(title.userId()))));
+                             : StringUtils::removeNotAscii(StringUtils::removeAccents(Account::username(title.userId()))));
     }
     std::string customPath;
 
@@ -239,8 +239,8 @@ std::tuple<bool, Result, std::string> io::backup(size_t index, AccountUid uid, s
                 }
                 else {
                     FileSystem::unmountDevice();
-                    Logging::info("Copy operation aborted by the user through the system keyboard.");
-                    return std::make_tuple(false, 0, "操作被用户取消。");
+                    Logging::info("用户通过系统键盘中止复制操作.");
+                    return std::make_tuple(false, 0, "操作被用户中止.");
                 }
             }
             else {
@@ -265,21 +265,21 @@ std::tuple<bool, Result, std::string> io::backup(size_t index, AccountUid uid, s
         int rc = io::deleteFolderRecursively((dstPath + "/").c_str());
         if (rc != 0) {
             FileSystem::unmountDevice();
-            Logging::error("Failed to recursively delete directory {} with result {}.", dstPath, rc);
-            return std::make_tuple(false, (Result)rc, "Failed to delete the existing backup\ndirectory recursively.");
+            Logging::error("无法递归删除结果为 {} 的目录 {}.", dstPath, rc);
+            return std::make_tuple(false, (Result)rc, "无法递归删除现有备份\n目录.");
         }
     }
 
     io::createDirectory(dstPath);
     g_copyCount    = 0;
     g_copyTotal    = io::countFiles("save:/");
-    g_transferMode = "备份";
+    g_transferMode = "Backup";
     res            = io::copyDirectory("save:/", dstPath + "/");
     if (R_FAILED(res)) {
         FileSystem::unmountDevice();
         io::deleteFolderRecursively((dstPath + "/").c_str());
-        Logging::error("Failed to copy directory {} with result 0x{:08X}. Skipping...", dstPath, res);
-        return std::make_tuple(false, res, "备份存档失败。");
+        Logging::error("无法复制目录 {},结果为 0x{:08X}.正在跳过...", dstPath, res);
+        return std::make_tuple(false, res, "备份保存失败.");
     }
 
     refreshDirectories(title.id());
@@ -287,17 +287,17 @@ std::tuple<bool, Result, std::string> io::backup(size_t index, AccountUid uid, s
     FileSystem::unmountDevice();
     if (!MS::multipleSelectionEnabled()) {
         blinkLed(4);
-        ret = std::make_tuple(true, 0, "进度已成功保存到磁盘。");
+        ret = std::make_tuple(true, 0, "进度已正确保存到磁盘.");
     }
 
     auto systemKeyboardAvailable = KeyboardManager::get().isSystemKeyboardAvailable();
     if (!systemKeyboardAvailable.first) {
         return std::make_tuple(true, systemKeyboardAvailable.second,
-            "进度已成功保存到磁盘。\nSystem keyboard applet was not\naccessible. The suggested destination\nfolder was used instead.");
+            "进度已正确保存到磁盘.\n系统键盘小程序\n无法访问.已使用建议的\n目标文件夹.");
     }
 
-    ret = std::make_tuple(true, 0, "进度已成功保存到磁盘。");
-    Logging::info("备份 succeeded.");
+    ret = std::make_tuple(true, 0, "进度已正确保存到磁盘.");
+    Logging::info("备份成功.");
     return ret;
 }
 
@@ -308,7 +308,7 @@ std::tuple<bool, Result, std::string> io::restore(size_t index, AccountUid uid, 
     Title title;
     getTitle(title, uid, index);
 
-    Logging::info("开始恢复 {}。游戏ID：0x{:016X}；用户ID：0x{:X}{:X}。", title.name().c_str(), title.id(), title.userId().uid[1],
+    Logging::info("已开始恢复 {}.标题 ID:0x{:016X};用户 ID:0x{:X}{:X}.", title.name().c_str(), title.id(), title.userId().uid[1],
         title.userId().uid[0]);
 
     FsFileSystem fileSystem;
@@ -328,13 +328,13 @@ std::tuple<bool, Result, std::string> io::restore(size_t index, AccountUid uid, 
         int rc = FileSystem::mountDevice(fileSystem);
         if (rc == -1) {
             FileSystem::unmountDevice();
-            Logging::error("恢复时挂载文件系统失败。游戏ID：0x{:016X}。", title.id());
-            return std::make_tuple(false, -2, "挂载存档失败。");
+            Logging::error("恢复期间无法挂载文件系统.标题 ID:0x{:016X}.", title.id());
+            return std::make_tuple(false, -2, "安装保存失败.");
         }
     }
     else {
-        Logging::error("Failed to mount filesystem during restore with result 0x{:08X}. Title id: 0x{:016X}.", res, title.id());
-        return std::make_tuple(false, res, "挂载存档失败。");
+        Logging::error("恢复期间无法挂载文件系统,结果为 0x{:08X}.标题 ID:0x{:016X}.", res, title.id());
+        return std::make_tuple(false, res, "安装保存失败.");
     }
 
     std::string srcPath = title.fullPath(cellIndex) + "/";
@@ -343,32 +343,32 @@ std::tuple<bool, Result, std::string> io::restore(size_t index, AccountUid uid, 
     res = io::deleteFolderRecursively(dstPath.c_str());
     if (R_FAILED(res)) {
         FileSystem::unmountDevice();
-        Logging::error("Failed to recursively delete directory {} with result 0x{:08X}.", dstPath, res);
-        return std::make_tuple(false, res, "删除存档失败。");
+        Logging::error("无法递归删除目录 {},结果为 0x{:08X}.", dstPath, res);
+        return std::make_tuple(false, res, "删除保存失败.");
     }
 
     g_copyCount    = 0;
     g_copyTotal    = io::countFiles(srcPath);
-    g_transferMode = "恢复";
+    g_transferMode = "Restore";
     res            = io::copyDirectory(srcPath, dstPath);
     if (R_FAILED(res)) {
         FileSystem::unmountDevice();
-        Logging::error("Failed to copy directory {} to {} with result 0x{:08X}. Skipping...", srcPath, dstPath, res);
-        return std::make_tuple(false, res, "恢复存档失败。");
+        Logging::error("无法将目录 {} 复制到 {},结果为 0x{:08X}.正在跳过...", srcPath, dstPath, res);
+        return std::make_tuple(false, res, "恢复保存失败.");
     }
 
     res = fsdevCommitDevice("save");
     if (R_FAILED(res)) {
-        Logging::error("Failed to commit save with result 0x{:08X}.", res);
-        return std::make_tuple(false, res, "提交到存档设备失败。");
+        Logging::error("无法提交保存,结果为 0x{:08X}.", res);
+        return std::make_tuple(false, res, "无法提交保存设备.");
     }
     else {
         blinkLed(4);
-        ret = std::make_tuple(true, 0, nameFromCell + "\n已成功恢复。");
+        ret = std::make_tuple(true, 0, nameFromCell + "\n已经恢复成功.");
     }
 
     FileSystem::unmountDevice();
 
-    Logging::info("恢复 succeeded.");
+    Logging::info("恢复成功.");
     return ret;
 }

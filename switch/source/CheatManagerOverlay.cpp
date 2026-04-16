@@ -18,7 +18,7 @@
  *   Additional Terms 7.b and 7.c of GPLv3 apply to this file:
  *       * Requiring preservation of specified reasonable legal notices or
  *         author attributions in that material or in the Appropriate Legal
- *         否tices displayed by works containing it.
+ *         Notices displayed by works containing it.
  *       * Prohibiting misrepresentation of the origin of that material,
  *         or requiring that modified versions of such material be marked in
  *         reasonable ways as different from the original version.
@@ -132,8 +132,8 @@ void CheatManagerOverlay::update(const InputState& input)
         for (size_t i = 0; i < scrollable->size(); i++) {
             g_selectedCheatCodes.push_back(scrollable->cellName(i));
         }
-        me = std::make_shared<是否Overlay>(
-            screen, "你想要存储金手指吗？",
+        me = std::make_shared<YesNoOverlay>(
+            screen, "Do you want to store the cheat file?",
             []() {
                 CheatManager::getInstance().save(g_selectedCheatKey, g_selectedCheatCodes);
                 g_screen->removeOverlay();

@@ -18,7 +18,7 @@
  *   Additional Terms 7.b and 7.c of GPLv3 apply to this file:
  *       * Requiring preservation of specified reasonable legal notices or
  *         author attributions in that material or in the Appropriate Legal
- *         否tices displayed by works containing it.
+ *         Notices displayed by works containing it.
  *       * Prohibiting misrepresentation of the origin of that material,
  *         or requiring that modified versions of such material be marked in
  *         reasonable ways as different from the original version.
@@ -41,8 +41,8 @@ static void handle_populate(struct mg_connection* nc, struct http_message* hm)
     auto map           = getCompleteTitleList();
     json["title_list"] = map;
     std::string body   = json.dump();
-    mg_printf(nc, "HTTP/1.1 200 确定\r\nContent-Length: %lu\r\n\r\n%.*s", (unsigned long)body.length(), (int)body.length(), body.c_str());
-    Logging::info("已处理一个新的配置连接。");
+    mg_printf(nc, "HTTP/1.1 200 OK\r\nContent-Length: %lu\r\n\r\n%.*s", (unsigned long)body.length(), (int)body.length(), body.c_str());
+    Logging::info("已处理新的配置连接.");
 }
 
 static void handle_save(struct mg_connection* nc, struct http_message* hm)
@@ -51,15 +51,15 @@ static void handle_save(struct mg_connection* nc, struct http_message* hm)
     if (f != NULL) {
         fwrite(hm->body.p, 1, hm->body.len, f);
         fclose(f);
-        Logging::info("配置已更新。");
+        Logging::info("配置已更新.");
     }
     else {
-        Logging::error("写入配置文件失败，错误代码 {}。", errno);
+        Logging::error("无法写入配置文件,错误代码为 {}.", errno);
     }
     Configuration::getInstance().load();
     Configuration::getInstance().parse();
     // Send response
-    mg_printf(nc, "HTTP/1.1 200 确定\r\nContent-Length: %lu\r\n\r\n%.*s", (unsigned long)hm->body.len, (int)hm->body.len, hm->body.p);
+    mg_printf(nc, "HTTP/1.1 200 OK\r\nContent-Length: %lu\r\n\r\n%.*s", (unsigned long)hm->body.len, (int)hm->body.len, hm->body.p);
 }
 
 static void ev_handler(struct mg_connection* nc, int ev, void* ev_data)
