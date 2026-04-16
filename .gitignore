@@ -11,5 +11,5 @@ switch/romfs/cheats/
 .idea
 .DS_Store
 tool/
-switch/source/*.py
-switch/source/*/*.bak
+**/*.bak
+**/*.py

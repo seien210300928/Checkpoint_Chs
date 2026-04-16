@@ -31,9 +31,9 @@ include $(DEVKITARM)/3ds_rules
 #     - icon.png
 #     - <libctru folder>/default_icon.png
 #---------------------------------------------------------------------------------
-APP_TITLE		:= 	Checkpoint
-APP_DESCRIPTION	:=	Checkpoint: save manager
-APP_AUTHOR		:=	Bernardo Giordano, FlagBrew
+APP_TITLE		:= 	Checkpoint 中文版
+APP_DESCRIPTION	:=	Checkpoint: 存档管理器
+APP_AUTHOR		:=	Bernardo Giordano, FlagBrew, Seien_MtF
 
 TARGET			:=	$(subst $e ,_,$(notdir $(APP_TITLE)))
 OUTDIR			:=	out
